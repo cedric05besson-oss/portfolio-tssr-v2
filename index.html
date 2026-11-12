@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  PORTFOLIO — Cédric BESSON · Technicien Supérieur Systèmes & Réseaux
+  ------------------------------------------------------------
+  VERSION 2 — Structure du site :
+    • index.html            → contenu du portfolio (ce fichier)
+    • style.css / script.js → mise en forme et interactions du portfolio
+    • edition.js            → mode édition (bouton « Éditer » ou Ctrl + Alt + M), taille des textes A− 100 % A+
+    • cv.html / cv.css      → CV en ligne (et source du PDF : Ctrl + P → « Enregistrer au format PDF »)
+    • mentions-legales.html → mentions légales
+    • lettre.html           → outil PRIVÉ de lettre de motivation (jamais publié, voir .gitignore)
+  Code d'origine du cours conservé dans : _sauvegarde-cours/
+  Procédure de mise en ligne : PROCEDURE-GITHUB.md
+  ============================================================
+-->
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ===== SEO ===== -->
+  <meta name="description" content="Portfolio de Cédric Besson – Technicien Supérieur Systèmes et Réseaux (TSSR). Administration Windows Server / Active Directory, réseaux & sécurité (VLAN, pfSense, Stormshield, VPN), PowerShell. Recherche un poste en Support N2, Exploitation & Supervision dans le Var ou en télétravail." />
+  <meta name="keywords" content="TSSR, administrateur systèmes et réseaux, support N2, exploitation, supervision, assistant RSSI, Active Directory, GPO, Windows Server, pfSense, Stormshield, PowerShell, Var, Toulon, Hyères" />
+  <meta name="author" content="Cédric Besson" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#071419" />
+
+  <!-- ===== Polices (Google Fonts) ===== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- ===== Bibliothèques : Bootstrap (grille + menu mobile) & Font Awesome (icônes) ===== -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- ===== Feuille de style personnelle (toujours APRÈS Bootstrap pour pouvoir le surcharger) ===== -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- ===== Favicons ===== -->
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="images/favicon-192x192.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png" />
+
+  <title>Cédric Besson | Technicien Systèmes &amp; Réseaux (TSSR)</title>
+</head>
+
+<body>
+  <!-- Lien d'évitement (accessibilité clavier) -->
+  <a href="#main-content" class="skip-link">Passer au contenu principal</a>
+  <!-- Barre de progression de lecture (alimentée par script.js) -->
+  <div id="read-progress" aria-hidden="true"></div>
+
+  <!-- ============================================================
+       NAVIGATION
+       ============================================================ -->
+  <header>
+    <nav id="mainNav" class="navbar navbar-expand-lg" aria-label="Navigation principale">
+      <div class="container">
+        <!-- Bannière : photo + nom (la photo remplace les initiales). Pour changer la photo : remplacer images/photo.jpg -->
+        <div class="nav-brand navbar-brand">
+          <!-- Photo : survol = aperçu agrandi, clic = photo en grand (géré par script.js, module 10) -->
+          <button type="button" class="brand-photo-btn" id="photoZoomBtn" aria-label="Agrandir la photo de Cédric Besson">
+            <img src="images/photo.jpg" alt="" class="brand-photo" width="44" height="44" />
+            <span class="brand-photo-peek" aria-hidden="true"><img src="images/photo.jpg" alt="" /></span>
+          </button>
+          <a class="brand-text" href="#hero" aria-label="Cédric Besson – Retour en haut">
+            <span class="brand-name">Cédric Besson</span>
+            <span class="brand-role">Technicien Systèmes &amp; Réseaux</span>
+          </a>
+        </div>
+
+        <button class="navbar-toggler" type="button"
+          data-bs-toggle="collapse" data-bs-target="#navContent"
+          aria-controls="navContent" aria-expanded="false" aria-label="Ouvrir le menu">
+          <i class="fas fa-bars" aria-hidden="true"></i>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navContent">
+          <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
+            <li class="nav-item"><a class="nav-link" href="#about">Profil</a></li>
+            <li class="nav-item"><a class="nav-link" href="#skills">Compétences</a></li>
+            <li class="nav-item"><a class="nav-link" href="#parcours">Parcours</a></li>
+            <li class="nav-item"><a class="nav-link" href="#projects">Labos</a></li>
+            <li class="nav-item"><a class="nav-link" href="#objectif">Objectif</a></li>
+            <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+          </ul>
+          <!-- Barre d'outils (2e ligne du bandeau) : Éditer, Formspree, Traduire, taille des textes, thème -->
+          <div class="nav-tools notranslate" translate="no">
+            <!-- Outils CV : visibles UNIQUEMENT en mode édition (edition.js) -->
+            <button type="button" class="tool-pill tool-cvpdf ed-only" data-cv="pdf" aria-label="Voir ou remplacer le CV PDF">
+              <i class="fas fa-file-arrow-up" aria-hidden="true"></i><span>CV PDF</span>
+            </button>
+            <button type="button" class="tool-pill tool-a4 ed-only" data-cv="a4" aria-label="Exporter le portfolio en PDF A4">
+              <i class="fas fa-file-pdf" aria-hidden="true"></i><span>PDF A4</span>
+            </button>
+            <button type="button" class="tool-pill tool-cv1 ed-only" data-cv="one" aria-label="Générer le CV sur une page A4">
+              <i class="fas fa-id-card" aria-hidden="true"></i><span>CV 1 page</span>
+            </button>
+
+            <!-- Éditer : ouvre le mode édition (edition.js) — aussi Ctrl + Alt + M -->
+            <button type="button" class="tool-pill tool-edit" data-ed-open aria-label="Modifier les textes de la page">
+              <i class="fas fa-pen" aria-hidden="true"></i><span>Éditer</span>
+            </button>
+
+            <!-- Formspree : état du formulaire de contact + accès aux messages reçus -->
+            <div class="tool-menu-wrap">
+              <button type="button" class="tool-pill tool-form" id="fsBtn" aria-haspopup="true" aria-expanded="false" aria-controls="fsMenu">
+                <i class="fas fa-paper-plane" aria-hidden="true"></i><span>Formspree</span>
+              </button>
+              <div class="tool-menu" id="fsMenu" hidden>
+                <p class="tool-menu-status"><span class="status-dot" aria-hidden="true"></span>Formulaire actif · envoi via Formspree</p>
+                <a href="#contact" class="tool-menu-item" data-close-menu><i class="fas fa-envelope" aria-hidden="true"></i>Aller au formulaire</a>
+                <a href="https://formspree.io/forms/xyeeldaw/submissions" class="tool-menu-item" target="_blank" rel="noopener"><i class="fas fa-inbox" aria-hidden="true"></i>Messages reçus <small>(mon compte)</small></a>
+              </div>
+            </div>
+
+            <!-- Traduire : Google Traduction, chargé seulement si une langue est choisie (script.js, module 11) -->
+            <div class="tool-menu-wrap">
+              <button type="button" class="tool-pill tool-tr" id="trBtn" aria-haspopup="true" aria-expanded="false" aria-controls="trMenu">
+                <i class="fas fa-language" aria-hidden="true"></i><span>Traduire</span><span class="tr-code" id="trCode">FR</span>
+              </button>
+              <ul class="tool-menu" id="trMenu" role="menu" aria-label="Choisir la langue de la page" hidden></ul>
+            </div>
+
+            <!-- Taille des textes (gérée par edition.js) -->
+            <div class="font-size-tools" role="group" aria-label="Taille des textes">
+              <button type="button" class="fs-btn" data-fs="-1" aria-label="Diminuer la taille des textes">A−</button>
+              <span class="fs-val" aria-live="polite">100 %</span>
+              <button type="button" class="fs-btn" data-fs="1" aria-label="Agrandir la taille des textes">A+</button>
+            </div>
+            <!-- Bouton de changement de thème (géré par script.js) -->
+            <button id="themeToggle" type="button" aria-label="Basculer le thème clair / sombre">
+              <i class="fas fa-sun" id="themeIcon" aria-hidden="true"></i>
+              <span id="themeLabel">Mode clair</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main-content">
+
+    <!-- ============================================================
+         01 · HERO / PRÉSENTATION
+         ============================================================ -->
+    <section id="hero" aria-labelledby="hero-title">
+      <!-- Décor : schéma réseau animé (purement décoratif). Les traits .net-flow
+           simulent un flux de données ; pour le retirer, supprimer tout le <svg>. -->
+      <svg class="hero-network" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+        <g class="net-lines">
+          <line x1="620" y1="120" x2="820" y2="210" /><line x1="820" y1="210" x2="1040" y2="140" />
+          <line x1="820" y1="210" x2="900" y2="420" /><line x1="900" y1="420" x2="1110" y2="470" />
+          <line x1="900" y1="420" x2="720" y2="560" /><line x1="620" y1="120" x2="560" y2="330" />
+          <line x1="560" y1="330" x2="720" y2="560" /><line x1="1040" y1="140" x2="1110" y2="470" />
+          <line x1="560" y1="330" x2="900" y2="420" />
+        </g>
+        <g class="net-flow">
+          <line x1="620" y1="120" x2="820" y2="210" /><line x1="820" y1="210" x2="900" y2="420" />
+          <line x1="900" y1="420" x2="1110" y2="470" /><line x1="560" y1="330" x2="720" y2="560" />
+        </g>
+        <g class="net-nodes">
+          <circle cx="620" cy="120" r="6" /><circle cx="820" cy="210" r="9" /><circle cx="1040" cy="140" r="5" />
+          <circle cx="900" cy="420" r="8" /><circle cx="1110" cy="470" r="5" /><circle cx="720" cy="560" r="6" />
+          <circle cx="560" cy="330" r="5" />
+        </g>
+      </svg>
+      <div class="hero-blob blob-1" aria-hidden="true"></div>
+      <div class="hero-blob blob-2" aria-hidden="true"></div>
+
+      <div class="container">
+        <div class="row align-items-center gy-5">
+
+          <div class="col-lg-7">
+            <!-- Badge de disponibilité : à mettre à jour selon ta situation -->
+            <p class="status-badge">
+              <span class="status-dot" aria-hidden="true"></span>
+              Disponible mi-décembre 2026 · Hyères, France
+            </p>
+
+            <h1 id="hero-title" class="hero-title">Cédric <span class="accent">Besson</span></h1>
+
+            <!-- Texte tournant : la liste des postes est définie dans script.js (ROLES) -->
+            <p class="hero-subtitle notranslate" translate="no"><!-- non traduit : Google casserait l'animation -->
+              <span class="prompt" aria-hidden="true">&gt;_</span>
+              <span id="typed-role">Administrateur Systèmes &amp; Réseaux</span><span class="typing-cursor" aria-hidden="true"></span>
+            </p>
+
+            <p class="hero-desc">
+              Technicien Supérieur Systèmes et Réseaux (<strong>TSSR, Bac+2 – examen déc. 2026</strong>)
+              fort de <strong>15 ans d'expérience</strong> en encadrement et gestion de flotte.
+              J'allie compétences techniques opérationnelles — <strong>Active Directory, réseau,
+              sécurité, PowerShell</strong> — et rigueur d'analyse d'un ancien responsable d'exploitation.
+            </p>
+
+            <div class="d-flex flex-wrap gap-3">
+              <!-- Ouvre le CV en ligne (cv.html) ; le PDF se télécharge depuis cette page -->
+              <a href="cv.html" class="btn-main" target="_blank" rel="noopener">
+                <i class="fas fa-file-lines" aria-hidden="true"></i> Voir mon CV
+              </a>
+              <a href="#contact" class="btn-ghost">
+                <i class="fas fa-paper-plane" aria-hidden="true"></i> Me contacter
+              </a>
+            </div>
+
+            <!-- Chiffres clés (animés par script.js via data-target) -->
+            <ul class="hero-stats" aria-label="Chiffres clés">
+              <li><span class="stat-val"><span class="counter" data-target="15">15</span>+</span><span class="stat-lbl">ans d'expérience<br>professionnelle</span></li>
+              <li><span class="stat-val">N1/N2</span><span class="stat-lbl">support utilisateurs<br>en collectivité</span></li>
+              <li><span class="stat-val">Bac+<span class="counter" data-target="2">2</span></span><span class="stat-lbl">Titre Pro TSSR<br>RNCP niveau 5</span></li>
+            </ul>
+          </div>
+
+          <!-- Emblème TSSR : cercle animé (pétrole → bordeaux) posé sur le schéma réseau.
+               Pas de portrait ici : la photo est dans le bandeau (cliquable pour l'agrandir).
+               Les 4 étiquettes flottantes se modifient dans le code ci-dessous. -->
+          <div class="col-lg-5 d-flex justify-content-center">
+            <!-- Visuel du hero : scène animée originale (3 sites, serveurs sécurisés, flux réseau,
+                 supervision). Dessinée en SVG par script.js (module 16), cadre pétrole → bordeaux. -->
+            <figure class="hero-visual reveal reveal-right" data-no-edit>
+              <div class="hero-visual-frame">
+                <svg id="heroScene" class="hero-scene" viewBox="0 0 600 360" role="img"
+                     aria-label="Animation : trois sites reliés en réseau, serveurs Windows sécurisés et supervision en temps réel"></svg>
+              </div>
+              <span class="emblem-chip chip-1"><i class="fab fa-windows"></i>Active Directory</span>
+              <span class="emblem-chip chip-2"><i class="fas fa-shield-halved"></i>pfSense</span>
+              <span class="emblem-chip chip-3"><i class="fas fa-terminal"></i>PowerShell</span>
+              <span class="emblem-chip chip-4"><i class="fas fa-network-wired"></i>VLAN</span>
+            </figure>
+          </div>
+        </div>
+      </div>
+
+      <a href="#about" class="scroll-indicator" aria-label="Défiler vers le profil">
+        <span>Défiler</span><i class="fas fa-chevron-down" aria-hidden="true"></i>
+      </a>
+    </section>
+
+    <!-- ============================================================
+         02 · PROFIL
+         ============================================================ -->
+    <section id="about" aria-labelledby="about-title">
+      <div class="container">
+        <div class="row gy-5">
+
+          <div class="col-lg-7 reveal">
+            <!-- data-num : grand numéro décoratif affiché en filigrane derrière le titre -->
+            <div class="section-head section-head--left" data-num="01">
+              <p class="section-label">01 — Profil</p>
+              <h2 id="about-title" class="section-title">Un technicien <span class="accent">opérationnel</span>, un parcours solide</h2>
+            </div>
+            <div class="section-divider" aria-hidden="true"><span class="line"></span><span class="dot"></span></div>
+
+            <div class="about-text">
+              <p>
+                Après <strong>15 ans comme responsable de flotte automobile et d'outillages</strong>
+                (Groupe EGIS, Eiffage Énergie Systèmes, ABO-Group), j'ai fait le choix de me
+                reconvertir dans l'informatique d'infrastructure en préparant le
+                <strong>Titre Professionnel TSSR</strong> chez <strong>MODE83 à Brignoles</strong>.
+              </p>
+              <p>
+                Mon stage à la <strong>Mairie de Six-Fours-les-Plages</strong> m'a confronté à la
+                réalité du terrain : support N1/N2 via la messagerie de service commune (SharePoint),
+                administration Active Directory,
+                déploiement de GPO, masterisation Windows 11 et diagnostics réseau.
+              </p>
+              <p>
+                Autonome, méthodique et doté d'un fort sens du service, je recherche un poste en
+                <strong>Support N2, Exploitation &amp; Supervision</strong> ou
+                <strong>Administration Systèmes &amp; Réseaux</strong>, avec un intérêt marqué pour la
+                sécurité (<strong>assistant RSSI</strong>).
+              </p>
+            </div>
+
+            <ul class="about-info-grid" aria-label="Informations pratiques">
+              <li><i class="fas fa-location-dot" aria-hidden="true"></i>Hyères (83400), France</li>
+              <li><i class="fas fa-laptop-house" aria-hidden="true"></i>Télétravail ou présentiel</li>
+              <li><i class="fas fa-calendar-check" aria-hidden="true"></i>Disponible mi-décembre 2026</li>
+              <li><i class="fas fa-car" aria-hidden="true"></i>Permis B &amp; AM · Véhiculé</li>
+              <li><i class="fas fa-language" aria-hidden="true"></i>Anglais B1 (technique)</li>
+              <li><i class="fas fa-graduation-cap" aria-hidden="true"></i>TSSR Bac+2 · MODE83 Brignoles</li>
+            </ul>
+
+            <!-- Carte de localisation.
+                 Pour changer de ville : modifier data-map-query ci-dessous (ex. "Toulon, 83000, France"),
+                 ou utiliser le champ « Lieu de la carte » du mode édition (Ctrl + Alt + M). -->
+            <div class="map-wrap" data-map-query="Hyères, 83400, France">
+              <p class="card-kicker"><i class="fas fa-map-location-dot" aria-hidden="true"></i> Ma localisation · <span class="map-label">Hyères, France</span></p>
+              <div class="map-frame">
+                <iframe title="Carte Google Maps – Hyères, France" loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade" allowfullscreen
+                  src="https://www.google.com/maps?q=Hy%C3%A8res%2C%2083400%2C%20France&amp;z=12&amp;hl=fr&amp;output=embed"></iframe>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-5 reveal reveal-right">
+            <div class="glass-card h-100">
+              <p class="card-kicker">Ce que j'apporte</p>
+              <ul class="motive-list">
+                <li>
+                  <span class="ico" aria-hidden="true"><i class="fas fa-users-gear"></i></span>
+                  <div><strong>15 ans de management</strong>Encadrement d'équipes, gestion de prestataires et de budgets : je sais prioriser et rendre compte.</div>
+                </li>
+                <li>
+                  <span class="ico" aria-hidden="true"><i class="fas fa-headset"></i></span>
+                  <div><strong>Sens du service</strong>Relation utilisateurs et clients au quotidien : écoute, pédagogie, résolution.</div>
+                </li>
+                <li>
+                  <span class="ico" aria-hidden="true"><i class="fas fa-file-lines"></i></span>
+                  <div><strong>Rigueur &amp; documentation</strong>Rédaction de procédures et de wikis, traçabilité des interventions.</div>
+                </li>
+                <li>
+                  <span class="ico" aria-hidden="true"><i class="fas fa-user-shield"></i></span>
+                  <div><strong>Culture sécurité</strong>Segmentation, pare-feu, VPN, principe du moindre privilège dans l'AD.</div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         03 · COMPÉTENCES
+         Pour ajouter une compétence : copier une ligne <li> dans le bloc voulu.
+         ============================================================ -->
+    <section id="skills" aria-labelledby="skills-title">
+      <div class="container">
+        <div class="text-center section-head reveal" data-num="02">
+          <p class="section-label justify-content-center">02 — Compétences</p>
+          <h2 id="skills-title" class="section-title">Stack <span class="accent">technique</span> &amp; savoir-être</h2>
+          <div class="section-divider justify-content-center" aria-hidden="true"><span class="line"></span><span class="dot"></span><span class="line line-rev"></span></div>
+        </div>
+
+        <div class="row g-4">
+          <!-- Bloc : Systèmes -->
+          <div class="col-md-6 col-xl-3 reveal">
+            <article class="skill-block">
+              <div class="skill-block-head">
+                <span class="skill-ico" aria-hidden="true"><i class="fas fa-server"></i></span>
+                <h3>Systèmes</h3>
+              </div>
+              <ul class="skill-list">
+                <li><strong>Windows Server</strong> 2022 / 2025</li>
+                <li><strong>Active Directory</strong> : AD DS, OU, GPO, rôles FSMO</li>
+                <li><strong>Linux</strong> Debian 13</li>
+                <li>Déploiement <strong>WDS</strong> &amp; masterisation Windows 11</li>
+                <li>Virtualisation <strong>Hyper-V</strong> / VirtualBox</li>
+              </ul>
+            </article>
+          </div>
+
+          <!-- Bloc : Réseau & Sécurité -->
+          <div class="col-md-6 col-xl-3 reveal" style="transition-delay:.08s">
+            <article class="skill-block">
+              <div class="skill-block-head">
+                <span class="skill-ico" aria-hidden="true"><i class="fas fa-network-wired"></i></span>
+                <h3>Réseau &amp; Sécurité</h3>
+              </div>
+              <ul class="skill-list">
+                <li>TCP/IP, <strong>subnetting</strong>, routage</li>
+                <li><strong>VLAN</strong> (802.1Q), brassage de baies</li>
+                <li>Services <strong>DHCP / DNS</strong></li>
+                <li>Pare-feu <strong>pfSense</strong> &amp; <strong>Stormshield</strong></li>
+                <li><strong>VPN</strong> IPsec / SSL, RDP, SSH</li>
+                <li>Analyse de trames <strong>Wireshark</strong></li>
+              </ul>
+            </article>
+          </div>
+
+          <!-- Bloc : Scripting & Outils -->
+          <div class="col-md-6 col-xl-3 reveal" style="transition-delay:.16s">
+            <article class="skill-block">
+              <div class="skill-block-head">
+                <span class="skill-ico" aria-hidden="true"><i class="fas fa-terminal"></i></span>
+                <h3>Scripting &amp; Outils</h3>
+              </div>
+              <ul class="skill-list">
+                <li><strong>PowerShell</strong> : automatisation AD &amp; postes</li>
+                <li><strong>GLPI</strong> : tickets &amp; gestion de parc</li>
+                <li>Support <strong>N1 / N2</strong> sur site et à distance</li>
+                <li>Supervision d'infrastructures</li>
+                <li>Procédures &amp; <strong>wikis</strong> techniques</li>
+              </ul>
+            </article>
+          </div>
+
+          <!-- Bloc : Soft Skills -->
+          <div class="col-md-6 col-xl-3 reveal" style="transition-delay:.24s">
+            <article class="skill-block">
+              <div class="skill-block-head">
+                <span class="skill-ico" aria-hidden="true"><i class="fas fa-handshake"></i></span>
+                <h3>Soft Skills</h3>
+              </div>
+              <ul class="skill-list">
+                <li>Encadrement d'équipes</li>
+                <li>Rigueur &amp; sens de l'organisation</li>
+                <li>Force de proposition</li>
+                <li>Communication &amp; relation utilisateurs</li>
+                <li>Autonomie, adaptabilité</li>
+                <li>Gestion administrative &amp; prestataires</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+
+        <!-- Nuage de technologies -->
+        <!-- Bandeau défilant : la liste est dupliquée automatiquement par script.js
+             pour obtenir une boucle continue. Il suffit d'ajouter / retirer des <li>. -->
+        <div class="marquee reveal">
+        <ul class="marquee-track" aria-label="Technologies utilisées">
+          <li><i class="fab fa-windows" aria-hidden="true"></i>Windows Server</li>
+          <li><i class="fas fa-sitemap" aria-hidden="true"></i>AD DS / GPO</li>
+          <li><i class="fab fa-linux" aria-hidden="true"></i>Debian 13</li>
+          <li><i class="fas fa-shield-halved" aria-hidden="true"></i>pfSense</li>
+          <li><i class="fas fa-fire" aria-hidden="true"></i>Stormshield</li>
+          <li><i class="fas fa-lock" aria-hidden="true"></i>VPN IPsec / SSL</li>
+          <li><i class="fas fa-wave-square" aria-hidden="true"></i>Wireshark</li>
+          <li><i class="fas fa-terminal" aria-hidden="true"></i>PowerShell</li>
+          <li><i class="fas fa-ticket" aria-hidden="true"></i>GLPI</li>
+          <li><i class="fas fa-layer-group" aria-hidden="true"></i>Hyper-V</li>
+          <li><i class="fas fa-cube" aria-hidden="true"></i>VirtualBox</li>
+          <li><i class="fas fa-compact-disc" aria-hidden="true"></i>WDS</li>
+          <li><i class="fas fa-share-nodes" aria-hidden="true"></i>SharePoint</li>
+        </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         04 · PARCOURS (timeline filtrable)
+         Chaque <article> porte data-cat="it" | "management" | "formation"
+         utilisé par les boutons de filtre (script.js).
+         ============================================================ -->
+    <section id="parcours" aria-labelledby="parcours-title">
+      <div class="container">
+        <div class="text-center section-head reveal" data-num="03">
+          <p class="section-label justify-content-center">03 — Parcours</p>
+          <h2 id="parcours-title" class="section-title">Expériences &amp; <span class="accent">formations</span></h2>
+          <div class="section-divider justify-content-center" aria-hidden="true"><span class="line"></span><span class="dot"></span><span class="line line-rev"></span></div>
+        </div>
+
+        <!-- Boutons de filtre -->
+        <div class="filter-bar reveal" role="group" aria-label="Filtrer le parcours">
+          <button type="button" class="filter-btn is-active" data-filter="all" aria-pressed="true">Tout</button>
+          <button type="button" class="filter-btn" data-filter="it" aria-pressed="false"><i class="fas fa-server" aria-hidden="true"></i> IT</button>
+          <button type="button" class="filter-btn" data-filter="formation" aria-pressed="false"><i class="fas fa-graduation-cap" aria-hidden="true"></i> Formations</button>
+          <button type="button" class="filter-btn" data-filter="management" aria-pressed="false"><i class="fas fa-briefcase" aria-hidden="true"></i> Management</button>
+        </div>
+
+        <!-- Légende du code couleur des pastilles -->
+        <p class="timeline-legend reveal">
+          <span><i class="legend-job" aria-hidden="true"></i>Postes occupés</span>
+          <span><i class="legend-cert" aria-hidden="true"></i>Diplômes &amp; certifications</span>
+        </p>
+
+        <div class="timeline">
+
+          <!-- Stage TSSR -->
+          <article class="timeline-item reveal" data-cat="it">
+            <span class="timeline-dot dot-it" aria-hidden="true"></span>
+            <span class="timeline-year" aria-hidden="true">2026</span>
+            <div class="glass-card">
+              <p class="timeline-date"><i class="fas fa-calendar" aria-hidden="true"></i> Sept. 2026 → Oct. 2026 · Stage</p>
+              <h3 class="timeline-title">Technicien Supérieur Systèmes et Réseaux</h3>
+              <p class="timeline-company"><i class="fas fa-landmark" aria-hidden="true"></i> Mairie de Six-Fours-les-Plages (83)</p>
+              <ul class="timeline-points">
+                <li><strong>Support N1/N2</strong> : qualification et résolution d'incidents sur site et à distance, demandes reçues via la messagerie de service commune (SharePoint).</li>
+                <li><strong>Administration AD</strong> : gestion des comptes, attribution des droits, déploiement de GPO.</li>
+                <li><strong>Déploiement &amp; réseau</strong> : masterisation Windows 11, brassage de baies, diagnostics réseau.</li>
+              </ul>
+              <div class="tags"><span>SharePoint</span><span>Active Directory</span><span>GPO</span><span>Windows 11</span><span>Brassage</span></div>
+            </div>
+          </article>
+
+          <!-- Formation TSSR -->
+          <article class="timeline-item reveal" data-cat="formation it">
+            <span class="timeline-dot dot-formation" aria-hidden="true"></span>
+            <span class="timeline-year" aria-hidden="true">2026</span>
+            <div class="glass-card">
+              <p class="timeline-date"><i class="fas fa-calendar" aria-hidden="true"></i> Mars 2026 → Déc. 2026 · Examen en décembre</p>
+              <h3 class="timeline-title">Titre Professionnel TSSR — Bac+2 (RNCP niveau 5)</h3>
+              <p class="timeline-company"><i class="fas fa-school" aria-hidden="true"></i> MODE83 · Brignoles (83)</p>
+              <ul class="timeline-points">
+                <li>Administration Windows Server, Active Directory (AD DS, GPO, FSMO) et Linux Debian.</li>
+                <li>Réseaux : VLAN, routage, DHCP/DNS, pare-feu pfSense &amp; Stormshield, VPN.</li>
+                <li>Automatisation PowerShell, déploiement WDS, virtualisation Hyper-V.</li>
+              </ul>
+              <div class="tags"><span>Windows Server</span><span>Debian</span><span>pfSense</span><span>Stormshield</span><span>PowerShell</span></div>
+            </div>
+          </article>
+
+          <!-- Responsable de flotte -->
+          <article class="timeline-item reveal" data-cat="management">
+            <span class="timeline-dot dot-management" aria-hidden="true"></span>
+            <span class="timeline-year" aria-hidden="true">2010<small>→ 2025</small></span>
+            <div class="glass-card">
+              <p class="timeline-date"><i class="fas fa-calendar" aria-hidden="true"></i> Janv. 2010 → Avr. 2025 · 15 ans</p>
+              <h3 class="timeline-title">Responsable de Flotte Automobile et Outillages</h3>
+              <p class="timeline-company"><i class="fas fa-building" aria-hidden="true"></i> Regroupement de missions</p>
+              <ul class="timeline-points">
+                <li><strong>ABO-Group</strong> · La Seyne-sur-Mer — 2023 à 2025</li>
+                <li><strong>Eiffage Énergie Systèmes</strong> · Vitrolles — 2021 à 2023</li>
+                <li><strong>Groupe EGIS</strong> · Aix-en-Provence — 2010 à 2020</li>
+              </ul>
+              <p class="timeline-desc">Encadrement d'équipes, pilotage de flotte et de prestataires, relation clients / utilisateurs et gestion administrative.</p>
+            </div>
+          </article>
+
+          <!-- Formation POEC -->
+          <article class="timeline-item reveal" data-cat="formation">
+            <span class="timeline-dot dot-formation" aria-hidden="true"></span>
+            <span class="timeline-year" aria-hidden="true">2020</span>
+            <div class="glass-card">
+              <p class="timeline-date"><i class="fas fa-calendar" aria-hidden="true"></i> Nov. 2020 → Févr. 2021</p>
+              <h3 class="timeline-title">Certification POEC (Modules Master 1) — Gestion de copropriété</h3>
+              <p class="timeline-company"><i class="fas fa-school" aria-hidden="true"></i> KEDGE Business School · Marseille</p>
+              <p class="timeline-desc">Certification obtenue avec <strong>82 % de réussite</strong>.</p>
+            </div>
+          </article>
+
+          <!-- ENEDIS -->
+          <article class="timeline-item reveal" data-cat="management">
+            <span class="timeline-dot dot-management" aria-hidden="true"></span>
+            <span class="timeline-year" aria-hidden="true">2008</span>
+            <div class="glass-card">
+              <p class="timeline-date"><i class="fas fa-calendar" aria-hidden="true"></i> 2008 → 2010</p>
+              <h3 class="timeline-title">Responsable d'un Centre de Relève des compteurs</h3>
+              <p class="timeline-company"><i class="fas fa-building" aria-hidden="true"></i> Groupe ENEDIS · Valence (26)</p>
+            </div>
+          </article>
+
+          <!-- Postes antérieurs regroupés pour alléger la timeline -->
+          <article class="timeline-item reveal" data-cat="management">
+            <span class="timeline-dot dot-management" aria-hidden="true"></span>
+            <span class="timeline-year" aria-hidden="true">1998</span>
+            <div class="glass-card">
+              <p class="timeline-date"><i class="fas fa-calendar" aria-hidden="true"></i> 1998 → 2008</p>
+              <h3 class="timeline-title">Premières responsabilités</h3>
+              <ul class="timeline-points">
+                <li>Responsable d'un centre d'hébergement — <strong>Groupe AFPA</strong>, Valence (2007-2008)</li>
+                <li>Responsable d'exploitation agricole — Valence (2002-2006)</li>
+                <li>Responsable de rayons — <strong>Groupe CASINO</strong>, Valence (1998-2002)</li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- Bac+2 -->
+          <article class="timeline-item reveal" data-cat="formation">
+            <span class="timeline-dot dot-formation" aria-hidden="true"></span>
+            <span class="timeline-year" aria-hidden="true">1996</span>
+            <div class="glass-card">
+              <p class="timeline-date"><i class="fas fa-calendar" aria-hidden="true"></i> Sept. 1996 → Juin 1998</p>
+              <h3 class="timeline-title">Niveau Bac+2 Force de vente</h3>
+              <p class="timeline-company"><i class="fas fa-school" aria-hidden="true"></i> Lycée Montplaisir · Valence (26)</p>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         05 · PROJETS / LABOS
+         Pour ajouter un labo : dupliquer un bloc <div class="col-…"> complet.
+         Les liens « Voir la doc » sont à remplacer par tes vrais liens (GitHub, PDF…).
+         ============================================================ -->
+    <section id="projects" aria-labelledby="proj-title">
+      <div class="container">
+        <div class="text-center section-head reveal" data-num="04">
+          <p class="section-label justify-content-center">04 — Projets &amp; Labos</p>
+          <h2 id="proj-title" class="section-title">Mises en <span class="accent">pratique</span></h2>
+          <div class="section-divider justify-content-center" aria-hidden="true"><span class="line"></span><span class="dot"></span><span class="line line-rev"></span></div>
+          <p class="section-desc mx-auto">Laboratoires réalisés en formation TSSR et en stage, documentés comme en production : schéma, procédure, tests de validation.</p>
+        </div>
+
+        <div class="row g-4">
+
+          <!-- Labo 1 : AD / GPO -->
+          <div class="col-md-6 col-xl-4 reveal">
+            <article class="project-card">
+              <div class="project-visual pv-blue" aria-hidden="true">
+                <i class="fas fa-sitemap"></i>
+                <code>Get-ADUser -Filter *</code>
+              </div>
+              <div class="project-body">
+                <p class="project-category">Systèmes · Annuaire</p>
+                <h3 class="project-title">Labo Active Directory &amp; GPO</h3>
+                <p class="project-desc">Mise en place d'un domaine sous Windows Server 2022 : arborescence d'OU par service, groupes AGDLP, contrôleur de domaine secondaire et répartition des rôles FSMO.</p>
+                <ul class="project-points">
+                  <li>GPO : mappage de lecteurs, fond d'écran, restrictions, verrouillage de session</li>
+                  <li>Délégation de droits au support (moindre privilège)</li>
+                  <li>DHCP / DNS intégrés à l'AD</li>
+                </ul>
+                <div class="tags"><span>Windows Server</span><span>AD DS</span><span>GPO</span><span>FSMO</span></div>
+              </div>
+            </article>
+          </div>
+
+          <!-- Labo 2 : VLAN / pfSense -->
+          <div class="col-md-6 col-xl-4 reveal" style="transition-delay:.08s">
+            <article class="project-card">
+              <div class="project-visual pv-teal" aria-hidden="true">
+                <i class="fas fa-shield-halved"></i>
+                <code>VLAN 10 | 20 | 30 | 99</code>
+              </div>
+              <div class="project-body">
+                <p class="project-category">Réseau · Sécurité</p>
+                <h3 class="project-title">Segmentation VLAN &amp; pare-feu pfSense</h3>
+                <p class="project-desc">Cloisonnement d'un réseau d'entreprise en VLAN 802.1Q (administration, utilisateurs, serveurs, invités) avec routage inter-VLAN et filtrage sur pfSense.</p>
+                <ul class="project-points">
+                  <li>Règles de filtrage par zone, politique « deny all » par défaut</li>
+                  <li>VPN IPsec site-à-site et accès nomade SSL</li>
+                  <li>Validation des flux à la capture Wireshark</li>
+                </ul>
+                <div class="tags"><span>802.1Q</span><span>pfSense</span><span>IPsec</span><span>Wireshark</span></div>
+              </div>
+            </article>
+          </div>
+
+          <!-- Labo 3 : Scripts PowerShell -->
+          <div class="col-md-6 col-xl-4 reveal" style="transition-delay:.16s">
+            <article class="project-card">
+              <div class="project-visual pv-violet" aria-hidden="true">
+                <i class="fas fa-terminal"></i>
+                <code>Import-Csv | New-ADUser</code>
+              </div>
+              <div class="project-body">
+                <p class="project-category">Automatisation</p>
+                <h3 class="project-title">Scripts PowerShell d'administration</h3>
+                <p class="project-desc">Scripts pour industrialiser les tâches répétitives du support et de l'administration AD.</p>
+                <ul class="project-points">
+                  <li>Création de comptes en masse depuis un fichier CSV</li>
+                  <li>Audit des comptes inactifs et des mots de passe expirés</li>
+                  <li>Inventaire des postes et export de rapport</li>
+                </ul>
+                <div class="tags"><span>PowerShell</span><span>ActiveDirectory</span><span>CSV</span></div>
+              </div>
+            </article>
+          </div>
+
+          <!-- Labo 4 : Déploiement WDS -->
+          <div class="col-md-6 col-xl-4 reveal">
+            <article class="project-card">
+              <div class="project-visual pv-blue" aria-hidden="true">
+                <i class="fas fa-compact-disc"></i>
+                <code>PXE boot → Windows 11</code>
+              </div>
+              <div class="project-body">
+                <p class="project-category">Déploiement</p>
+                <h3 class="project-title">Masterisation &amp; déploiement WDS</h3>
+                <p class="project-desc">Création d'une image Windows 11 de référence et déploiement réseau par PXE. Masterisation Windows 11 également pratiquée en stage à la Mairie de Six-Fours.</p>
+                <div class="tags"><span>WDS</span><span>PXE</span><span>Windows 11</span><span>Sysprep</span></div>
+              </div>
+            </article>
+          </div>
+
+          <!-- Labo 5 : Stormshield -->
+          <div class="col-md-6 col-xl-4 reveal" style="transition-delay:.08s">
+            <article class="project-card">
+              <div class="project-visual pv-teal" aria-hidden="true">
+                <i class="fas fa-fire"></i>
+                <code>NAT · Filtrage · VPN SSL</code>
+              </div>
+              <div class="project-body">
+                <p class="project-category">Sécurité périmétrique</p>
+                <h3 class="project-title">Pare-feu Stormshield</h3>
+                <p class="project-desc">Configuration d'un UTM Stormshield : objets réseau, règles de NAT et de filtrage, accès distant VPN SSL pour les collaborateurs nomades.</p>
+                <div class="tags"><span>Stormshield</span><span>NAT</span><span>VPN SSL</span></div>
+              </div>
+            </article>
+          </div>
+
+          <!-- Labo 6 : Debian -->
+          <div class="col-md-6 col-xl-4 reveal" style="transition-delay:.16s">
+            <article class="project-card">
+              <div class="project-visual pv-violet" aria-hidden="true">
+                <i class="fab fa-linux"></i>
+                <code>apt install glpi</code>
+              </div>
+              <div class="project-body">
+                <p class="project-category">Linux · Outils</p>
+                <h3 class="project-title">Serveur Debian 13 &amp; GLPI</h3>
+                <p class="project-desc">Installation d'un serveur Debian 13 sécurisé (SSH par clés, pare-feu local) hébergeant GLPI pour la gestion des tickets et l'inventaire du parc.</p>
+                <div class="tags"><span>Debian 13</span><span>SSH</span><span>GLPI</span></div>
+              </div>
+            </article>
+          </div>
+
+        </div>
+
+        <!-- ---------- OUTILS .EXE TÉLÉCHARGEABLES ----------
+             Captures : déposer images/exe-diag-1.jpg, -2.jpg, -3.jpg (elles apparaissent seules).
+             Lien MEGA : MEGA → clic droit sur le fichier → « Obtenir le lien ». -->
+        <div id="outils-exe" class="exe-head reveal">
+          <h3 class="exe-heading"><i class="fas fa-microchip" aria-hidden="true"></i> Outils <span class="accent">.exe</span> à tester</h3>
+          <p class="section-desc mx-auto">Applications que j'ai développées en PowerShell puis compilées en <strong>.exe</strong> autonome. Téléchargeables via MEGA, elles se lancent directement sous Windows 10/11, sans installation.</p>
+        </div>
+
+        <article class="exe-card glass-card reveal" data-exe="diag"
+                 data-shots="images/exe-diag-1.jpg images/exe-diag-2.jpg images/exe-diag-3.jpg">
+          <div class="exe-media">
+            <button type="button" class="exe-shot" aria-label="Agrandir les captures de l'outil">
+              <img src="data:," alt="">
+              <span class="exe-zoom"><i class="fas fa-magnifying-glass-plus" aria-hidden="true"></i></span>
+            </button>
+            <!-- Aperçu stylisé du menu, affiché tant qu'aucune capture n'est disponible -->
+            <div class="exe-console" aria-hidden="true" data-no-edit>
+              <div class="exe-console-bar"><span></span><span></span><span></span><b>TSSR Diagnostic Center</b></div>
+              <pre>╔══ MENU PRINCIPAL ═════════════╗
+  [1] Diagnostic rapide
+  [2] Diagnostic complet
+  [3] Diagnostics par catégorie
+  [4] Rechercher un diagnostic
+  [5] Rapports TXT · HTML · JSON
+  [6] Historique   [7] Thème
+╚═══════════════════════════════╝
+<i>›</i> Système  Matériel  Stockage  Réseau
+  Sécurité  Windows  Performance <span class="exe-caret">▌</span></pre>
+            </div>
+            <span class="exe-badge"><i class="fas fa-microchip" aria-hidden="true"></i>.exe</span>
+            <span class="exe-count"></span>
+          </div>
+
+          <div class="exe-body">
+            <p class="project-category">Outil PowerShell → .exe</p>
+            <h3 class="project-title">TSSR Diagnostic Center</h3>
+            <p class="exe-file"><code>outil-diag-sys-pc.exe</code></p>
+            <p class="project-desc">Application console de diagnostic d'un poste Windows, pensée pour le technicien de terrain : un menu clair, des diagnostics sous forme de modules et un rapport prêt à transmettre.</p>
+            <ul class="project-points">
+              <li>30 diagnostics : système, matériel, stockage (SMART), réseau (IP, DNS, ping, routes, ports), sécurité (pare-feu, Defender, comptes admin), Windows Update, journaux</li>
+              <li>Diagnostic rapide ou complet, recherche par mot-clé, thèmes clair / sombre</li>
+              <li>Rapports TXT, HTML et JSON, journalisation de chaque session</li>
+              <li>Aucune action destructive : lecture seule, droits admin demandés seulement si nécessaire</li>
+            </ul>
+            <div class="tags"><span>PowerShell 5.1 / 7</span><span>ps2exe</span><span>Windows 10/11</span><span>Diagnostic</span></div>
+
+            <div class="exe-dl">
+              <div class="dl-meta">
+                <span class="dl-chip"><i class="fas fa-file-arrow-down" aria-hidden="true"></i> 271 Ko</span>
+                <span class="dl-chip"><i class="fab fa-windows" aria-hidden="true"></i> Windows 10/11</span>
+              </div>
+              <a class="btn-main dl-btn" href="https://mega.nz/file/Hy5DBIra#VaAO-LJMakEWFBQkbmJBsB7si6bNuEVO0zguqgzjWPM" target="_blank" rel="noopener noreferrer">
+                <i class="fas fa-download" aria-hidden="true"></i> Télécharger le .exe (MEGA)
+              </a>
+              <p class="dl-hint"><i class="fas fa-shield-halved" aria-hidden="true"></i> Exécutable autonome — aucune installation. Windows peut afficher un avertissement SmartScreen pour un .exe non signé : « Informations complémentaires » → « Exécuter quand même ».</p>
+            </div>
+
+            <!-- Visible uniquement en mode Éditer -->
+            <div class="exe-edit ed-only" data-no-edit>
+              <label class="cv-btn"><i class="fas fa-image" aria-hidden="true"></i> Ajouter une capture
+                <input type="file" accept="image/*" data-shot-input hidden></label>
+              <a class="cv-btn cv-primary" data-shot-dl hidden><i class="fas fa-download" aria-hidden="true"></i> <span>Télécharger</span></a>
+              <button type="button" class="cv-btn" data-shot-clear hidden><i class="fas fa-trash-can" aria-hidden="true"></i> Retirer mes captures</button>
+              <small>La capture est gardée dans ce navigateur. Pour que tous les visiteurs la voient : téléchargez-la et déposez-la dans le dossier <code>images/</code>, puis republiez.</small>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         05 · OBJECTIF PROFESSIONNEL
+         Textes modifiables directement avec le bouton « Éditer ».
+         ============================================================ -->
+    <section id="objectif" aria-labelledby="objectif-title">
+      <div class="container">
+        <div class="text-center section-head reveal" data-num="05">
+          <p class="section-label justify-content-center">05 — Objectif professionnel</p>
+          <h2 id="objectif-title" class="section-title">Le poste que <span class="accent">je vise</span></h2>
+          <div class="section-divider justify-content-center" aria-hidden="true"><span class="line"></span><span class="dot"></span><span class="line line-rev"></span></div>
+        </div>
+
+        <div class="goal-panel glass-card reveal">
+          <div class="row g-4 align-items-center">
+            <div class="col-lg-6">
+              <h3 class="goal-title">Mettre <span class="accent">15 ans de rigueur opérationnelle</span> au service de votre infrastructure.</h3>
+              <p class="goal-text">Titulaire du Titre Professionnel <strong>TSSR (Bac+2, décembre 2026)</strong>, je recherche un poste de <strong>technicien support N2</strong>, de <strong>technicien d'exploitation &amp; supervision</strong> ou d'<strong>administrateur systèmes et réseaux</strong>, avec une évolution visée vers la <strong>sécurité (assistant RSSI)</strong>.</p>
+              <p class="goal-text">En <strong>CDI ou CDD</strong>, au sein d'une DSI, d'une ESN, d'une PME ou d'une collectivité du <strong>Var et de la région PACA</strong>, en présentiel ou en télétravail. J'attends une équipe où la fiabilité, la documentation et le sens du service comptent autant que la technique.</p>
+              <p class="goal-status"><span class="status-dot" aria-hidden="true"></span>Disponible mi-décembre 2026 · Titre professionnel TSSR (niveau 5)</p>
+              <a href="#contact" class="btn-main"><i class="fas fa-paper-plane" aria-hidden="true"></i> Me proposer un poste</a>
+            </div>
+            <div class="col-lg-6">
+              <div class="goal-grid">
+                <article class="goal-card spot">
+                  <span class="goal-icon"><i class="fas fa-headset" aria-hidden="true"></i></span>
+                  <h3>Support N2</h3>
+                  <p>Résoudre les incidents complexes, accompagner les utilisateurs, fiabiliser le parc.</p>
+                </article>
+                <article class="goal-card spot">
+                  <span class="goal-icon gi-wine"><i class="fas fa-chart-line" aria-hidden="true"></i></span>
+                  <h3>Exploitation &amp; supervision</h3>
+                  <p>Surveiller, anticiper et maintenir la disponibilité des services.</p>
+                </article>
+                <article class="goal-card spot">
+                  <span class="goal-icon"><i class="fas fa-server" aria-hidden="true"></i></span>
+                  <h3>Admin systèmes &amp; réseaux</h3>
+                  <p>Active Directory, GPO, VLAN, sauvegardes : administrer et documenter.</p>
+                </article>
+                <article class="goal-card spot">
+                  <span class="goal-icon gi-wine"><i class="fas fa-user-shield" aria-hidden="true"></i></span>
+                  <h3>Évolution sécurité</h3>
+                  <p>Progresser vers un rôle d'assistant RSSI : conformité, durcissement, sensibilisation.</p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         BANDEAU D'APPEL À L'ACTION (entre Objectif et Contact)
+         ============================================================ -->
+    <aside class="cta-band" aria-label="Disponibilité">
+      <div class="container">
+        <div class="cta-inner reveal">
+          <div>
+            <p class="cta-kicker">Disponible mi-décembre 2026</p>
+            <p class="cta-title">Un profil technique avec 15 ans de rigueur opérationnelle.</p>
+          </div>
+          <div class="d-flex flex-wrap gap-3">
+            <a href="#contact" class="btn-light"><i class="fas fa-paper-plane" aria-hidden="true"></i> Me contacter</a>
+            <a href="cv.html" class="btn-outline-light" target="_blank" rel="noopener"><i class="fas fa-file-lines" aria-hidden="true"></i> Voir le CV</a>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ============================================================
+         06 · CONTACT
+         Le formulaire ouvre la messagerie du visiteur (mailto:), sans service tiers.
+         ============================================================ -->
+    <section id="contact" aria-labelledby="contact-title">
+      <div class="container">
+        <div class="text-center section-head reveal" data-num="06">
+          <p class="section-label justify-content-center">06 — Contact</p>
+          <h2 id="contact-title" class="section-title">Échangeons sur <span class="accent">votre besoin</span></h2>
+          <div class="section-divider justify-content-center" aria-hidden="true"><span class="line"></span><span class="dot"></span><span class="line line-rev"></span></div>
+        </div>
+
+        <div class="row g-4 align-items-stretch">
+          <div class="col-lg-5 reveal">
+            <div class="glass-card h-100">
+              <p class="card-kicker">Coordonnées</p>
+              <ul class="contact-list">
+                <li>
+                  <span class="ico" aria-hidden="true"><i class="fas fa-envelope"></i></span>
+                  <div><small>E-mail</small><a href="mailto:cedric05.besson@gmail.com">cedric05.besson@gmail.com</a></div>
+                </li>
+                <li>
+                  <span class="ico" aria-hidden="true"><i class="fas fa-phone"></i></span>
+                  <div><small>Téléphone</small><a href="tel:+33650993653">06 50 99 36 53</a></div>
+                </li>
+                <li>
+                  <span class="ico" aria-hidden="true"><i class="fab fa-linkedin-in"></i></span>
+                  <div><small>LinkedIn</small><a href="https://www.linkedin.com/in/cedricbesson-29b23a1a5" target="_blank" rel="noopener">cedricbesson-29b23a1a5</a></div>
+                </li>
+                <li>
+                  <span class="ico" aria-hidden="true"><i class="fas fa-location-dot"></i></span>
+                  <div><small>Localisation</small>Hyères (83400), France · Télétravail possible</div>
+                </li>
+              </ul>
+              <a href="ressources/CV_Cedric_BESSON_TSSR.pdf" class="btn-main w-100 justify-content-center mt-4" download>
+                <i class="fas fa-file-pdf" aria-hidden="true"></i> Télécharger le CV (PDF)
+              </a>
+            </div>
+          </div>
+
+          <div class="col-lg-7 reveal reveal-right">
+            <!-- Formulaire envoyé via Formspree (adresse d'envoi : action ci-dessous).
+                 Si l'envoi échoue, script.js propose d'ouvrir la messagerie du visiteur. -->
+            <form id="contactForm" class="glass-card h-100" action="https://formspree.io/f/xyeeldaw" method="POST" novalidate>
+              <p class="card-kicker">Envoyer un message</p>
+              <!-- Champ piège anti-robots : invisible pour les humains, rempli par les robots -->
+              <input type="text" name="_gotcha" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true" />
+              <div class="row g-3">
+                <div class="col-sm-6">
+                  <label for="cf-name" class="form-label">Nom *</label>
+                  <input id="cf-name" name="name" type="text" class="form-input" required autocomplete="name" />
+                </div>
+                <div class="col-sm-6">
+                  <label for="cf-email" class="form-label">E-mail *</label>
+                  <input id="cf-email" name="email" type="email" class="form-input" required autocomplete="email" />
+                </div>
+                <div class="col-sm-6">
+                  <label for="cf-company" class="form-label">Entreprise</label>
+                  <input id="cf-company" name="company" type="text" class="form-input" autocomplete="organization" />
+                </div>
+                <div class="col-sm-6">
+                  <label for="cf-subject" class="form-label">Objet *</label>
+                  <input id="cf-subject" name="subject" type="text" class="form-input" required placeholder="Ex. : Poste Support N2 – Toulon" />
+                </div>
+                <div class="col-12">
+                  <label for="cf-message" class="form-label">Message *</label>
+                  <textarea id="cf-message" name="message" rows="5" class="form-input" required></textarea>
+                </div>
+              </div>
+              <p class="form-note">Vos coordonnées servent uniquement à vous répondre. <a href="mentions-legales.html#donnees">En savoir plus</a></p>
+              <p id="cf-feedback" class="form-feedback" role="status" aria-live="polite"></p>
+              <button type="submit" class="btn-main">
+                <i class="fas fa-paper-plane" aria-hidden="true"></i> Envoyer le message
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================
+       PIED DE PAGE
+       ============================================================ -->
+  <footer>
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+      <p class="mb-0">© <span id="year">2026</span> Cédric Besson · Technicien Supérieur Systèmes &amp; Réseaux · <a href="mentions-legales.html">Mentions légales</a></p>
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/cedricbesson-29b23a1a5" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        <a href="mailto:cedric05.besson@gmail.com" aria-label="E-mail"><i class="fas fa-envelope"></i></a>
+        <a href="#hero" aria-label="Retour en haut"><i class="fas fa-arrow-up"></i></a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Flèche de retour en haut : l'anneau suit la progression de lecture (script.js, module 9) -->
+  <button type="button" id="backToTop" aria-label="Retour en haut de la page" title="Retour en haut">
+    <svg viewBox="0 0 54 54" aria-hidden="true" focusable="false">
+      <circle class="btt-track" cx="27" cy="27" r="24"></circle>
+      <circle class="btt-ring" cx="27" cy="27" r="24"></circle>
+    </svg>
+    <i class="fas fa-arrow-up" aria-hidden="true"></i>
+  </button>
+
+  <!-- Photo en grand (ouverte au clic sur la photo du bandeau ; Échap ou clic pour fermer) -->
+  <div class="photo-lightbox" id="photoLightbox" role="dialog" aria-modal="true" aria-label="Photo de Cédric Besson" hidden>
+    <figure>
+      <img src="images/photo.jpg" alt="Photo de Cédric Besson" />
+      <figcaption>Cédric Besson · Technicien Systèmes &amp; Réseaux</figcaption>
+    </figure>
+    <button type="button" class="photo-lightbox-close" aria-label="Fermer la photo"><i class="fas fa-xmark" aria-hidden="true"></i></button>
+  </div>
+
+  <!-- Visionneuse plein écran des captures .exe (← → pour naviguer, clic sur l'image = loupe, Échap pour fermer) -->
+  <div class="shot-viewer" id="shotViewer" role="dialog" aria-modal="true" aria-label="Captures de l'outil" hidden>
+    <figure class="sv-figure">
+      <img class="sv-img" src="data:," alt="" />
+      <figcaption><span class="sv-count"></span> <span class="sv-caption"></span></figcaption>
+    </figure>
+    <button type="button" class="sv-btn sv-prev" aria-label="Capture précédente"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+    <button type="button" class="sv-btn sv-next" aria-label="Capture suivante"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+    <button type="button" class="sv-btn sv-zoom" aria-label="Loupe"><i class="fas fa-magnifying-glass-plus" aria-hidden="true"></i></button>
+    <button type="button" class="sv-btn sv-close" aria-label="Fermer"><i class="fas fa-xmark" aria-hidden="true"></i></button>
+  </div>
+
+  <!-- ===== Scripts : Bootstrap (menu mobile) puis script personnel ===== -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="script.js"></script>
+  <script src="edition.js"></script>
+</body>
+</html>

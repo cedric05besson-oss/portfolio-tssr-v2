@@ -1,0 +1,21 @@
+# ============================================================
+# Fichiers gardés sur le PC, JAMAIS publiés sur GitHub
+# ============================================================
+
+# Outil privé de lettre de motivation
+lettre.html
+
+# Code d'origine du cours (sauvegarde)
+_sauvegarde-cours/
+
+# Ressources personnelles ou de test
+ressources/mes-images/
+ressources/cv-tests/
+ressources/Cle-Formspree.txt
+ressources/outils.txt
+ressources/*.exe
+
+# Réglages de l'éditeur et documentation interne
+.vscode/
+.claude/
+PROCEDURE-GITHUB.md

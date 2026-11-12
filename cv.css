@@ -1,0 +1,200 @@
+/* ============================================================
+   CV EN LIGNE — Cédric BESSON · cv.css
+   ------------------------------------------------------------
+   1. Variables   2. Page   3. En-tête   4. Colonnes
+   5. Boutons     6. Responsive          7. Impression (A4)
+   Mêmes couleurs que le portfolio : bleu pétrole + bordeaux.
+   ============================================================ */
+
+/* ---------- 1. VARIABLES ---------- */
+:root {
+  --petrol:      #0e6372;
+  --petrol-dark: #0a3a44;
+  --petrol-soft: #e6f1f3;
+  --wine:        #8a1538;
+  --ink:         #1c2b30;
+  --muted:       #5a6e74;
+  --line:        #d7e3e6;
+  --paper:       #ffffff;
+  --font-display: 'Syne', sans-serif;
+  --font-body:    'DM Sans', sans-serif;
+}
+
+/* ---------- 2. PAGE ---------- */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 17px;               /* grand format : lecture confortable à l'écran */
+  line-height: 1.65;
+  color: var(--ink);
+  background: radial-gradient(ellipse at top, #0f2a33, #071419 70%);
+  min-height: 100vh;
+  padding: 3rem 1rem 4rem;
+}
+
+/* La « feuille » du CV */
+.cv-page {
+  max-width: 1080px; margin: 0 auto;
+  background: var(--paper);
+  border-radius: 18px; overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0,0,0,.45);
+}
+
+a { color: var(--petrol); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.muted { color: var(--muted); }
+
+h2 {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: 1.15rem; letter-spacing: .02em;
+  color: var(--petrol); margin: 0 0 .9rem;
+  padding-bottom: .35rem; border-bottom: 2px solid var(--line);
+}
+section + section { margin-top: 2rem; }
+
+/* ---------- 3. EN-TÊTE ---------- */
+.cv-header {
+  display: flex; align-items: center; gap: 2.4rem;
+  padding: 2.6rem 3rem;
+  color: #fff;
+  background: linear-gradient(120deg, var(--petrol-dark) 0%, var(--petrol) 60%, var(--wine) 130%);
+}
+/* Photo grande et ronde, avec un liseré blanc pour la détacher du fond */
+.cv-photo {
+  flex-shrink: 0;
+  width: 200px; height: 200px; object-fit: cover; border-radius: 50%;
+  object-position: 50% 22%;      /* cadre sur le visage (photo au format portrait) */
+  border: 5px solid rgba(255,255,255,.9);
+  box-shadow: 0 12px 30px rgba(0,0,0,.3);
+}
+.cv-name {
+  font-family: var(--font-display); font-weight: 800;
+  font-size: clamp(2.2rem, 5vw, 3.2rem); line-height: 1.05; margin: 0 0 .4rem;
+}
+.cv-name span { letter-spacing: .04em; }
+.cv-title { font-size: 1.35rem; font-weight: 500; margin: 0 0 .5rem; }
+.cv-targets {
+  display: inline-block; margin: 0;
+  font-size: .95rem; padding: .3rem .9rem; border-radius: 100px;
+  background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.3);
+}
+
+/* ---------- 4. COLONNES ---------- */
+.cv-body { display: grid; grid-template-columns: 320px 1fr; }
+
+.cv-side { padding: 2.4rem 2rem; background: var(--petrol-soft); }
+.cv-side p { margin: 0; }
+.cv-main { padding: 2.4rem 3rem; }
+
+.cv-contact, .cv-list, .cv-chips, .cv-skills { list-style: none; padding: 0; margin: 0; }
+.cv-contact li { display: flex; align-items: flex-start; gap: .7rem; margin-bottom: .55rem; font-size: .95rem; word-break: break-word; }
+.cv-contact i { width: 18px; margin-top: .3rem; text-align: center; color: var(--petrol); }
+
+.cv-chips { display: flex; flex-wrap: wrap; gap: .4rem; }
+.cv-chips li {
+  font-size: .85rem; padding: .25rem .7rem; border-radius: 100px;
+  background: #fff; border: 1px solid var(--line);
+}
+.cv-list li { position: relative; padding-left: 1rem; font-size: .95rem; }
+.cv-list li::before { content: '•'; position: absolute; left: 0; color: var(--wine); }
+.cv-interests li { margin-bottom: .6rem; line-height: 1.45; }
+.cv-interests strong { display: block; color: var(--petrol); }
+
+.cv-summary {
+  margin: 0 0 2rem; padding: 1.1rem 1.4rem;
+  font-size: 1.02rem;
+  background: var(--petrol-soft); border-left: 4px solid var(--wine); border-radius: 0 10px 10px 0;
+}
+
+.cv-skills li { margin-bottom: .7rem; }
+.cv-skills strong { display: block; color: var(--ink); }
+
+/* Frise : pastille pétrole = postes, pastille bordeaux = diplômes (même code que le portfolio) */
+.cv-timeline { list-style: none; margin: 0; padding: 0 0 0 1.6rem; border-left: 2px solid var(--line); }
+.cv-timeline > li { position: relative; margin-bottom: 1.2rem; }
+.cv-timeline > li::before {
+  content: ''; position: absolute; left: calc(-1.6rem - 7px); top: .45rem;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--petrol); box-shadow: 0 0 0 3px #fff;
+}
+.cv-timeline--cert > li::before { background: var(--wine); }
+.cv-role { margin: 0; font-weight: 700; font-size: 1.05rem; }
+.cv-role em { font-weight: 500; color: var(--muted); }
+.cv-meta { margin: .1rem 0 .4rem; font-size: .92rem; color: var(--muted); }
+.cv-timeline ul { margin: .2rem 0 0; padding-left: 1.1rem; font-size: .95rem; }
+.cv-timeline ul li { margin-bottom: .2rem; }
+
+/* ---------- 5. BOUTONS (écran uniquement) ---------- */
+.cv-actions {
+  position: fixed; right: 1.2rem; bottom: 1.2rem; z-index: 10;
+  display: flex; gap: .5rem;
+}
+.cv-btn {
+  display: inline-flex; align-items: center; gap: .45rem;
+  padding: .55rem 1rem; border-radius: 100px;
+  font-size: .9rem; font-weight: 500; color: #fff;
+  background: rgba(7,20,25,.75); border: 1px solid rgba(255,255,255,.2);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 6px 18px rgba(0,0,0,.3);
+}
+.cv-btn:hover { text-decoration: none; color: #fff; background: var(--petrol); }
+.cv-btn--main { background: var(--wine); border-color: transparent; }
+
+/* ---------- 6. RESPONSIVE ---------- */
+@media screen and (max-width: 860px) {
+  body { padding: 1rem .6rem 5rem; font-size: 16px; }
+  .cv-header { flex-direction: column; text-align: center; padding: 2rem 1.4rem; gap: 1.2rem; }
+  .cv-photo { width: 170px; height: 170px; }
+  .cv-body { grid-template-columns: 1fr; }
+  .cv-side, .cv-main { padding: 1.8rem 1.4rem; }
+}
+
+/* ---------- 7. IMPRESSION / EXPORT PDF (A4, une page) ---------- */
+@page { size: A4; margin: 0; }
+@media print {
+  /* Toutes les tailles en rem se réduisent d'un coup grâce à cette base */
+  html { font-size: 10.4px; }
+  body { background: #fff; padding: 0; font-size: 1rem; line-height: 1.45; min-height: 0; }
+  .cv-actions { display: none; }
+  .cv-page { max-width: none; border-radius: 0; box-shadow: none; }
+  .cv-header { padding: 7mm 10mm; gap: 7mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .cv-photo { width: 34mm; height: 34mm; border-width: 3px; }
+  .cv-name { font-size: 26px; }
+  .cv-title { font-size: 15px; }
+  .cv-targets { font-size: 10px; }
+  .cv-body { grid-template-columns: 62mm 1fr; min-height: calc(297mm - 48mm); }
+  .cv-side { padding: 6mm 6mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .cv-main { padding: 6mm 9mm; }
+  .cv-summary { -webkit-print-color-adjust: exact; print-color-adjust: exact; margin-bottom: 4mm; }
+  h2 { font-size: 13px; margin-bottom: 2.5mm; }
+  section + section { margin-top: 4.5mm; }
+  .cv-timeline > li { margin-bottom: 2.4mm; }
+  .cv-timeline > li::before, .cv-list li::before { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .cv-role { font-size: 11.5px; }
+  .cv-skills li { margin-bottom: 1.6mm; }
+  a { color: var(--ink); }
+}
+
+/* ---------- 8. MODE ÉDITION (edition.js : Ctrl + Alt + M) — jamais imprimé ---------- */
+body.ed-mode [data-ed-key] { outline: 1px dashed rgba(14,99,114,.6); outline-offset: 3px; border-radius: 4px; cursor: text; }
+body.ed-mode [data-ed-key]:hover,
+body.ed-mode [data-ed-key]:focus { outline: 2px solid var(--wine); background: rgba(138,21,56,.06); }
+.ed-toolbar {
+  position: fixed; left: 50%; bottom: 1rem; z-index: 30; transform: translateX(-50%);
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .5rem;
+  max-width: calc(100% - 2rem); padding: .6rem .8rem; border-radius: 16px;
+  font-size: .85rem; color: #f1f8f9; background: rgba(7,20,25,.95);
+  border: 1px solid rgba(92,200,211,.35); box-shadow: 0 16px 40px rgba(0,0,0,.45);
+}
+.ed-toolbar[hidden] { display: none; }
+.ed-toolbar .ed-title { color: #e58aa6; font-weight: 700; }
+.ed-toolbar button { font: inherit; color: #fff; cursor: pointer; padding: .4rem .75rem; border-radius: 10px; border: 1px solid rgba(92,200,211,.35); background: rgba(255,255,255,.06); }
+.ed-toolbar button:hover { background: var(--petrol); }
+.ed-toolbar .ed-primary { background: var(--wine); border-color: var(--wine); }
+.ed-toast {
+  position: fixed; left: 50%; top: 1.2rem; z-index: 31; transform: translateX(-50%);
+  padding: .55rem 1rem; border-radius: 10px; font-size: .85rem; color: #fff; background: var(--petrol);
+}
+@media print { .ed-toolbar, .ed-toast { display: none !important; } }

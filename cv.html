@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  CV EN LIGNE — Cédric BESSON
+  ------------------------------------------------------------
+  Version web du CV, ouverte depuis les boutons « Voir mon CV » du portfolio.
+    • À l'écran : grand format aéré, photo bien visible.
+    • À l'impression (Ctrl + P → « Enregistrer au format PDF ») : une page A4.
+    • Modification directe : Ctrl + Alt + M (voir edition.js), puis « Exporter la page ».
+  Mise en forme : cv.css
+  Pour modifier une information, il suffit de changer le texte ci-dessous.
+  ============================================================
+-->
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="CV de Cédric Besson – Technicien Supérieur Systèmes et Réseaux (TSSR), Hyères (83), France." />
+  <meta name="theme-color" content="#071419" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="cv.css" />
+
+  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png" />
+  <title>CV · Cédric Besson | Technicien Systèmes &amp; Réseaux</title>
+</head>
+
+<body>
+
+  <!-- Boutons discrets, masqués à l'impression -->
+  <nav class="cv-actions" aria-label="Actions">
+    <a href="index.html" class="cv-btn"><i class="fas fa-arrow-left" aria-hidden="true"></i> Portfolio</a>
+    <a href="ressources/CV_Cedric_BESSON_TSSR.pdf" class="cv-btn cv-btn--main" download><i class="fas fa-download" aria-hidden="true"></i> PDF</a>
+  </nav>
+
+  <main class="cv-page">
+
+    <!-- ===== EN-TÊTE ===== -->
+    <header class="cv-header">
+      <img src="images/photo.jpg" alt="Photo de Cédric Besson" class="cv-photo" width="200" height="200" />
+      <div>
+        <h1 class="cv-name">Cédric <span>BESSON</span></h1>
+        <p class="cv-title">Technicien Supérieur Systèmes et Réseaux</p>
+        <p class="cv-targets">Support N2 · Exploitation &amp; Supervision · Administration Systèmes &amp; Réseaux</p>
+      </div>
+    </header>
+
+    <div class="cv-body">
+
+      <!-- ===== COLONNE LATÉRALE ===== -->
+      <aside class="cv-side">
+        <section>
+          <h2>Contact</h2>
+          <ul class="cv-contact">
+            <li><i class="fas fa-phone" aria-hidden="true"></i><a href="tel:+33650993653">06 50 99 36 53</a></li>
+            <li><i class="fas fa-envelope" aria-hidden="true"></i><a href="mailto:cedric05.besson@gmail.com">cedric05.besson@gmail.com</a></li>
+            <li><i class="fas fa-location-dot" aria-hidden="true"></i>Hyères (83400), France</li>
+            <li><i class="fab fa-linkedin-in" aria-hidden="true"></i><a href="https://www.linkedin.com/in/cedricbesson-29b23a1a5" target="_blank" rel="noopener">cedricbesson-29b23a1a5</a></li>
+            <li><i class="fas fa-car" aria-hidden="true"></i>Permis B &amp; AM · Véhiculé</li>
+            <li><i class="fas fa-laptop-house" aria-hidden="true"></i>Télétravail ou présentiel · Var</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Langues</h2>
+          <p><strong>Anglais B1</strong> — technique<br><span class="muted">(documentation, ticketing)</span></p>
+        </section>
+
+        <section>
+          <h2>Atouts</h2>
+          <ul class="cv-chips">
+            <li>Force de proposition</li>
+            <li>Rigueur &amp; organisation</li>
+            <li>Communication</li>
+            <li>Adaptabilité</li>
+            <li>Gestion administrative</li>
+            <li>Autonomie</li>
+            <li>Rédaction &amp; documentation</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Centres d'intérêt</h2>
+          <!-- Chaque intérêt : <strong> = thème, puis l'activité et les qualités qu'elle développe -->
+          <ul class="cv-list cv-interests">
+            <li><strong>Engagement associatif</strong> Bénévolat à la Croix-Rouge <span class="muted">(esprit d'équipe, gestion des situations d'urgence, écoute)</span></li>
+            <li><strong>Sports &amp; arts martiaux</strong> Karaté &amp; Viet Vo Dao <span class="muted">(discipline, maîtrise de soi, gestion du stress)</span>, basket-ball <span class="muted">(esprit d'équipe)</span></li>
+            <li><strong>Modélisme &amp; réflexion</strong> Maquettes &amp; puzzles complexes <span class="muted">(patience, vision spatiale, rigueur d'assemblage)</span></li>
+            <li><strong>Technique &amp; logique</strong> Bricolage et rénovation <span class="muted">(résolution de problèmes, autonomie, méthode)</span></li>
+          </ul>
+        </section>
+      </aside>
+
+      <!-- ===== COLONNE PRINCIPALE ===== -->
+      <div class="cv-main">
+        <p class="cv-summary">
+          Prochainement certifié <strong>Technicien Supérieur Systèmes et Réseaux (TSSR)</strong> et fort de
+          <strong>15 ans d'expérience professionnelle</strong>, j'allie compétences techniques opérationnelles
+          (réseau, Active Directory, PowerShell) et rigueur d'analyse. Autonome, méthodique et doté d'un fort
+          sens du service, je recherche un poste en Support N2, Supervision ou Exploitation, en présentiel ou
+          à distance, <strong>dès mi-décembre 2026</strong>.
+        </p>
+
+        <section>
+          <h2>Compétences clés</h2>
+          <ul class="cv-skills">
+            <li><strong>Réseaux &amp; Sécurité</strong> TCP/IP, VLAN, subnetting, pare-feu (pfSense, Stormshield), accès distants (VPN, RDP, SSH).</li>
+            <li><strong>Systèmes &amp; Administration</strong> Windows Server, Active Directory (AD DS, GPO), Linux, automatisation &amp; scripting PowerShell.</li>
+            <li><strong>Support &amp; Supervision</strong> Support N2/N3, gestion des incidents (GLPI), supervision d'infrastructures, rédaction de procédures &amp; wikis.</li>
+            <li><strong>Management &amp; Transversal</strong> Encadrement d'équipes, gestion de flotte &amp; prestataires, relation clients/utilisateurs, gestion administrative.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Expériences professionnelles</h2>
+          <ol class="cv-timeline">
+            <li>
+              <p class="cv-role">Technicien Supérieur Systèmes et Réseaux <em>(stage)</em></p>
+              <p class="cv-meta">Sept. → oct. 2026 · Mairie de Six-Fours-les-Plages</p>
+              <ul>
+                <li><strong>Support N1/N2</strong> : qualification et résolution d'incidents sur site / à distance, via la messagerie de service commune (SharePoint).</li>
+                <li><strong>Administration AD</strong> : gestion des comptes, attribution des droits, déploiement de GPO.</li>
+                <li><strong>Déploiement &amp; réseau</strong> : masterisation Windows 11, brassage de baies, diagnostics réseau.</li>
+              </ul>
+            </li>
+            <li>
+              <p class="cv-role">Responsable de Flotte Automobile et Outillages</p>
+              <p class="cv-meta">Janv. 2010 → avr. 2025 · Regroupement de missions</p>
+              <ul>
+                <li>ABO-Group · La Seyne-sur-Mer — 2023 à 2025</li>
+                <li>Eiffage Énergie Systèmes · Vitrolles — 2021 à 2023</li>
+                <li>Groupe EGIS · Aix-en-Provence — 2010 à 2020</li>
+              </ul>
+            </li>
+            <li>
+              <p class="cv-role">Responsable d'un Centre de Relève des compteurs</p>
+              <p class="cv-meta">2008 → 2010 · Groupe ENEDIS · Valence (26)</p>
+            </li>
+            <li>
+              <p class="cv-role">Responsable d'un centre d'hébergement des apprenants</p>
+              <p class="cv-meta">2007 → 2008 · Groupe AFPA · Valence</p>
+            </li>
+            <li>
+              <p class="cv-role">Responsable d'exploitation agricole</p>
+              <p class="cv-meta">2002 → 2006 · Valence</p>
+            </li>
+            <li>
+              <p class="cv-role">Responsable de rayons</p>
+              <p class="cv-meta">1998 → 2002 · Groupe CASINO · Valence</p>
+            </li>
+          </ol>
+        </section>
+
+        <section>
+          <h2>Diplômes &amp; formations</h2>
+          <ol class="cv-timeline cv-timeline--cert">
+            <li>
+              <p class="cv-role">Titre Professionnel Technicien Supérieur Systèmes et Réseaux — Bac+2</p>
+              <p class="cv-meta">Mars → déc. 2026 · MODE83 · Brignoles (examen en décembre 2026)</p>
+            </li>
+            <li>
+              <p class="cv-role">Certification POEC (modules Master 1) — Gestion de copropriété</p>
+              <p class="cv-meta">Nov. 2020 → févr. 2021 · KEDGE Business School · Marseille · 82 % de réussite</p>
+            </li>
+            <li>
+              <p class="cv-role">Niveau Bac+2 Force de vente</p>
+              <p class="cv-meta">1996 → 1998 · Lycée Montplaisir · Valence</p>
+            </li>
+          </ol>
+        </section>
+      </div>
+    </div>
+  </main>
+  <!-- Mode édition (Ctrl + Alt + M) : permet aussi de modifier le CV directement sur la page -->
+  <script src="edition.js"></script>
+</body>
+</html>
