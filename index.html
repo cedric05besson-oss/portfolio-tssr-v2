@@ -112,7 +112,7 @@
               <div class="tool-menu" id="fsMenu" hidden>
                 <p class="tool-menu-status"><span class="status-dot" aria-hidden="true"></span>Formulaire actif · envoi via Formspree</p>
                 <a href="#contact" class="tool-menu-item" data-close-menu><i class="fas fa-envelope" aria-hidden="true"></i>Aller au formulaire</a>
-                <a href="https://formspree.io/forms/xyeeldaw/submissions" class="tool-menu-item" target="_blank" rel="noopener"><i class="fas fa-inbox" aria-hidden="true"></i>Messages reçus <small>(mon compte)</small></a>
+                <a href="https://formspree.io/forms/xyeeldaw/submissions" data-owner-only class="tool-menu-item" target="_blank" rel="noopener"><i class="fas fa-inbox" aria-hidden="true"></i>Messages reçus <small>(mon compte)</small></a>
               </div>
             </div>
 
@@ -215,19 +215,23 @@
 
           <!-- Emblème TSSR : cercle animé (pétrole → bordeaux) posé sur le schéma réseau.
                Pas de portrait ici : la photo est dans le bandeau (cliquable pour l'agrandir).
-               Les 4 étiquettes flottantes se modifient dans le code ci-dessous. -->
+               Les 5 étiquettes flottantes se modifient dans le code ci-dessous. -->
           <div class="col-lg-5 d-flex justify-content-center">
             <!-- Visuel du hero : scène animée originale (3 sites, serveurs sécurisés, flux réseau,
-                 supervision). Dessinée en SVG par script.js (module 16), cadre pétrole → bordeaux. -->
+                 supervision). Dessinée en SVG par script.js (module 16), dans un cercle pétrole → bordeaux
+                 avec orbite pointillée et satellite. -->
             <figure class="hero-visual reveal reveal-right" data-no-edit>
+              <span class="hv-orbit" aria-hidden="true"></span>
+              <span class="hv-sat" aria-hidden="true"></span>
               <div class="hero-visual-frame">
-                <svg id="heroScene" class="hero-scene" viewBox="0 0 600 360" role="img"
+                <svg id="heroScene" class="hero-scene" viewBox="0 0 600 600" role="img"
                      aria-label="Animation : trois sites reliés en réseau, serveurs Windows sécurisés et supervision en temps réel"></svg>
               </div>
               <span class="emblem-chip chip-1"><i class="fab fa-windows"></i>Active Directory</span>
               <span class="emblem-chip chip-2"><i class="fas fa-shield-halved"></i>pfSense</span>
               <span class="emblem-chip chip-3"><i class="fas fa-terminal"></i>PowerShell</span>
               <span class="emblem-chip chip-4"><i class="fas fa-network-wired"></i>VLAN</span>
+              <span class="emblem-chip chip-5"><i class="fas fa-fire"></i>Stormshield</span>
             </figure>
           </div>
         </div>
@@ -864,7 +868,7 @@
                   <div><small>Localisation</small>Hyères (83400), France · Télétravail possible</div>
                 </li>
               </ul>
-              <a href="ressources/CV_Cedric_BESSON_TSSR.pdf" class="btn-main w-100 justify-content-center mt-4" download>
+              <a href="ressources/CV_Cedric_BESSON_TSSR.pdf" data-cv-download class="btn-main w-100 justify-content-center mt-4" download>
                 <i class="fas fa-file-pdf" aria-hidden="true"></i> Télécharger le CV (PDF)
               </a>
             </div>

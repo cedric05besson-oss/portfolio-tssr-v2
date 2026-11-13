@@ -443,6 +443,16 @@ const ToolMenus = (function () {
     if (b) choose(b.dataset.lang);
   });
 
+  // « Télécharger le CV (PDF) » : le fichier PDF est en français. Page traduite :
+  // on ouvre le CV en ligne dans la même langue et on lance « Enregistrer en PDF ».
+  document.querySelectorAll('[data-cv-download]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      if (currentLang() === PAGE_LANG) return;
+      e.preventDefault();
+      window.open('cv.html?print', '_blank');
+    });
+  });
+
   const start = currentLang();
   refreshUi(start);
   if (start !== PAGE_LANG) loadGoogle();
@@ -460,7 +470,7 @@ const ToolMenus = (function () {
   const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* Projection isométrique : coordonnées « sol » (x, y) → pixels de l'écran */
-  function iso(x, y, h) { return [300 + (x - y) * 32, 34 + (x + y) * 16 - (h || 0)]; }
+  function iso(x, y, h) { return [300 + (x - y) * 28, 150 + (x + y) * 14 - (h || 0)]; }
   function pts(list) { return list.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' '); }
   function el(tag, attrs, parent) {
     const n = document.createElementNS(NS, tag);
@@ -480,13 +490,13 @@ const ToolMenus = (function () {
     '<filter id="hsGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/>' +
       '<feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
 
-  el('rect', { x: 0, y: 0, width: 600, height: 360, fill: 'url(#hsBg)' });
+  el('rect', { x: 0, y: 0, width: 600, height: 600, fill: 'url(#hsBg)' });
 
   /* Quadrillage du sol */
   const grid = el('g', { class: 'hs-grid' });
-  for (let i = 0; i <= 11; i++) {
-    el('line', { x1: iso(i, -0.5)[0], y1: iso(i, -0.5)[1], x2: iso(i, 11)[0], y2: iso(i, 11)[1] }, grid);
-    el('line', { x1: iso(-0.5, i)[0], y1: iso(-0.5, i)[1], x2: iso(11, i)[0], y2: iso(11, i)[1] }, grid);
+  for (let i = -2; i <= 13; i++) {
+    el('line', { x1: iso(i, -3)[0], y1: iso(i, -3)[1], x2: iso(i, 14)[0], y2: iso(i, 14)[1] }, grid);
+    el('line', { x1: iso(-3, i)[0], y1: iso(-3, i)[1], x2: iso(14, i)[0], y2: iso(14, i)[1] }, grid);
   }
 
   /* Les trois sites (dalles au sol) */
@@ -550,7 +560,7 @@ const ToolMenus = (function () {
   }
 
   function server(x, y, main) {
-    const s = 0.5, h = main ? 58 : 44;
+    const s = 0.46, h = main ? 50 : 38;
     const base = iso(x, y);
     /* Anneau au sol */
     el('ellipse', { class: 'hs-ring hs-ring-srv', cx: base[0], cy: base[1], rx: 34, ry: 17,
@@ -602,7 +612,7 @@ const ToolMenus = (function () {
   /* Écrans de supervision (bas gauche) : trois tracés de pouls + jauges */
   const COLORS = ['hs-dot-a', 'hs-dot-b', 'hs-dot-w'];
   COLORS.forEach(function (c, k) {
-    const x = 16 + k * 62, y = 282;
+    const x = 165 + k * 62, y = 378;
     const g = el('g', { class: 'hs-panel' });
     el('rect', { x: x, y: y, width: 56, height: 62, rx: 6 }, g);
     el('polyline', { class: 'hs-ecg ' + c, style: 'animation-delay:' + (-k * 0.8) + 's',
@@ -612,7 +622,7 @@ const ToolMenus = (function () {
   });
 
   /* Radar (bas droit) */
-  const rx = 548, ry = 308;
+  const rx = 440, ry = 412;
   const radar = el('g', { class: 'hs-radar' });
   [34, 22, 10].forEach(function (r) { el('circle', { cx: rx, cy: ry, r: r }, radar); });
   el('line', { x1: rx - 34, y1: ry, x2: rx + 34, y2: ry }, radar);

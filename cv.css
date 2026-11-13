@@ -198,3 +198,25 @@ body.ed-mode [data-ed-key]:focus { outline: 2px solid var(--wine); background: r
   padding: .55rem 1rem; border-radius: 10px; font-size: .85rem; color: #fff; background: var(--petrol);
 }
 @media print { .ed-toolbar, .ed-toast { display: none !important; } }
+
+/* ---------- 8. TRADUCTION (cv-traduction.js) ---------- */
+.cv-lang select {
+  font: inherit; color: #fff; background: transparent; border: 0; cursor: pointer; padding-right: .2rem;
+}
+.cv-lang select:focus { outline: none; }
+.cv-lang option { color: #1c2b30; }
+.visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+/* On masque la barre et les infobulles ajoutées par Google */
+#gt-holder { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; overflow: hidden; }
+body { top: 0 !important; }
+iframe.skiptranslate, .skiptranslate > iframe, .goog-te-banner-frame, #goog-gt-tt,
+.goog-te-balloon-frame, .goog-tooltip, .VIpgJd-ZVi9od-ORHb-OEVmcd, .VIpgJd-ZVi9od-aZ2wEe-wOHMyf,
+.VIpgJd-ZVi9od-aZ2wEe-OiiCO, .VIpgJd-yAWNEb-L7lbkb { display: none !important; visibility: hidden !important; }
+.goog-text-highlight { background: none !important; box-shadow: none !important; }
+@media screen and (max-width: 480px) { .cv-actions { left: .6rem; right: .6rem; justify-content: center; flex-wrap: wrap; } }
+/* Impression d'un CV traduit : les éléments ajoutés par Google ne doivent pas créer de 2e page */
+@media print {
+  body > .skiptranslate, #gt-holder, #goog-gt-tt, .cv-lang { display: none !important; }
+  html, body { height: auto !important; min-height: 0 !important; }
+  .cv-page { break-after: avoid; page-break-after: avoid; }
+}

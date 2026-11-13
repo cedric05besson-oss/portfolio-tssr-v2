@@ -24,6 +24,21 @@ const Store = {
   del(key) { try { localStorage.removeItem(key); } catch (e) { /* ignoré */ } }
 };
 
+/* ---------- PROPRIÉTAIRE ----------
+   Le mode « Éditer » et les outils CV ne sont proposés que sur l'ordinateur
+   de Cédric : page ouverte depuis le dossier (file://) ou via un serveur local
+   (localhost / 127.0.0.1). Sur le site publié (GitHub Pages), les visiteurs
+   ne voient ni le bouton ni les outils, le raccourci est désactivé et
+   d'éventuelles anciennes modifications locales ne sont plus appliquées.
+   Rappel : un site statique ne peut de toute façon jamais être modifié par
+   un visiteur ; seul un nouveau « git push » change le site en ligne. */
+const IS_OWNER = location.protocol === 'file:' ||
+  /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+if (!IS_OWNER) {
+  document.documentElement.classList.add('public-view');
+  document.querySelectorAll('[data-ed-open], .ed-only, [data-owner-only]').forEach(function (el) { el.remove(); });
+}
+
 function toast(msg) {
   const t = document.createElement('div');
   t.className = 'ed-toast';
@@ -61,6 +76,7 @@ function toast(msg) {
 
 /* ---------- 2 & 3. MODE ÉDITION + CARTE ---------- */
 (function () {
+  if (!IS_OWNER) return;   // site publié : pas de mode édition pour les visiteurs
   const PAGE = (location.pathname.split('/').pop() || 'index.html');
   const KEY  = 'edits:' + PAGE;
 
@@ -254,8 +270,10 @@ function toast(msg) {
   const CV_FILE = 'ressources/CV_Cedric_BESSON_TSSR.pdf';
   const CV_NAME = 'CV_Cedric_BESSON_TSSR.pdf';
 
-  // Impression automatique (cv.html?print)
-  if (/[?&]print\b/.test(location.search)) {
+  // Impression automatique (cv.html?print). Page traduite : c'est cv-traduction.js
+  // qui imprime, une fois la traduction terminée.
+  const translatedCv = /(?:^|;\s*)googtrans=\/[^\/]*\/(?!fr\b)[a-z]/.test(document.cookie);
+  if (/[?&]print\b/.test(location.search) && !translatedCv) {
     window.addEventListener('load', function () { setTimeout(function () { window.print(); }, 700); });
   }
 
