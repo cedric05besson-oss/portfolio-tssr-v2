@@ -117,6 +117,7 @@ section + section { margin-top: 2rem; }
 .cv-list li { position: relative; padding-left: 1rem; font-size: .95rem; }
 .cv-list li::before { content: '•'; position: absolute; left: 0; color: var(--wine); }
 .cv-interests li, .cv-transfer li { line-height: 1.45; }
+.cv-side .cv-lang-item + .cv-lang-item { margin-top: var(--side-item); }
 .cv-interests strong { display: block; color: var(--petrol); }
 
 .cv-summary {
@@ -184,14 +185,14 @@ button.cv-btn { font: inherit; font-size: .9rem; cursor: pointer; }
   .cv-targets { font-size: 10px; }
   .cv-body { grid-template-columns: 62mm 1fr; min-height: calc(297mm - 48mm); }
   .cv-side { padding: 6mm 6mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .cv-main { padding: 6mm 9mm; }
-  .cv-summary { -webkit-print-color-adjust: exact; print-color-adjust: exact; margin-bottom: 4mm; }
+  .cv-main { padding: 5.5mm 9mm 2mm; }
+  .cv-summary { -webkit-print-color-adjust: exact; print-color-adjust: exact; margin-bottom: 3.5mm; padding: 2.6mm 4mm; }
   h2 { font-size: 13px; margin-bottom: 2.5mm; }
-  section + section { margin-top: 4.5mm; }
-  .cv-timeline > li { margin-bottom: 2.4mm; }
+  section + section { margin-top: 4mm; }
+  .cv-timeline > li { margin-bottom: 2mm; }
   .cv-timeline > li::before, .cv-list li::before { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .cv-role { font-size: 11.5px; }
-  .cv-skills li { margin-bottom: 1.6mm; }
+  .cv-skills li { margin-bottom: 1.3mm; }
   /* Colonne latérale resserrée (5 rubriques sur une seule page A4) */
   .cv-body { grid-template-columns: 68mm 1fr; }
   .cv-side { --side-gap: 8mm; --side-item: 1.5mm; }
