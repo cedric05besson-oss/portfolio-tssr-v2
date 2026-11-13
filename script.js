@@ -20,6 +20,7 @@
     15. Traduction (Google Traduction, chargée à la demande)
     16. Scène animée du hero (SVG isométrique : sites, serveurs, flux réseau)
     17. Outils .exe : captures, visionneuse plein écran, ajout de captures en mode Éditer
+    18. Étiquettes du hero cliquables → labo correspondant
    ============================================================ */
 'use strict';
 
@@ -778,6 +779,23 @@ const ToolMenus = (function () {
       store(KEY, null);
       if (dl) dl.hidden = true;
       refresh();
+    });
+  });
+})();
+
+/* ---------- 18. ÉTIQUETTES DU HERO → LABO CORRESPONDANT ----------
+   Un clic sur une étiquette (Active Directory, pfSense…) descend jusqu'au labo
+   lié et le fait briller quelques instants. */
+(function () {
+  document.querySelectorAll('a.emblem-chip[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function () {
+      const col = document.querySelector(a.getAttribute('href'));
+      const card = col && col.querySelector('.project-card');
+      if (!card) return;
+      col.classList.add('visible');   // au cas où l'animation d'apparition n'a pas encore eu lieu
+      card.classList.remove('is-flash');
+      setTimeout(function () { card.classList.add('is-flash'); }, 650);
+      setTimeout(function () { card.classList.remove('is-flash'); }, 3200);
     });
   });
 })();

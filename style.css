@@ -1236,3 +1236,17 @@ body.ed-mode [data-ed-key]:focus { outline: 2px solid var(--clr-wine2); backgrou
   html { scroll-behavior: auto; }
   .reveal { opacity: 1; transform: none; }
 }
+
+/* Étiquettes du hero cliquables → labo correspondant (mis en évidence à l'arrivée) */
+a.emblem-chip { text-decoration: none; cursor: pointer; transition: border-color var(--trans), background var(--trans), box-shadow var(--trans); }
+a.emblem-chip:hover, a.emblem-chip:focus-visible {
+  color: #fff; background: var(--clr-wine); border-color: var(--clr-wine-text);
+  box-shadow: 0 0 0 3px rgba(229,138,166,.25), 0 10px 26px rgba(0,0,0,.35);
+}
+a.emblem-chip:hover i, a.emblem-chip:focus-visible i { color: #fff; }
+[data-theme="light"] a.emblem-chip:hover { color: #fff; }
+.project-card.is-flash { animation: cardFlash 2.2s ease-out; border-color: var(--clr-wine-text); }
+@keyframes cardFlash {
+  0%, 30% { box-shadow: 0 0 0 4px rgba(229,138,166,.55), var(--shadow-glow); transform: translateY(-6px); }
+  100%    { box-shadow: var(--shadow-card); transform: none; }
+}

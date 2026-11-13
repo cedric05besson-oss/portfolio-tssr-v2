@@ -82,10 +82,27 @@ section + section { margin-top: 2rem; }
 }
 
 /* ---------- 4. COLONNES ---------- */
-.cv-body { display: grid; grid-template-columns: 320px 1fr; }
+.cv-body { display: grid; grid-template-columns: 340px 1fr; }
 
 .cv-side { padding: 2.4rem 2rem; background: var(--petrol-soft); }
 .cv-side p { margin: 0; }
+
+/* Bandeau gauche : Contact isolé dans une carte blanche, puis les rubriques
+   (Langues, Savoir-être, Expérience transférable, Centres d'intérêt…)
+   toutes séparées par le même espace, avec le même rythme de lignes. */
+.cv-side { --side-gap: 2rem; --side-item: .5rem; }
+.cv-side > section { margin: 0; }
+.cv-side > section + section { margin-top: var(--side-gap); }
+.cv-side > section:first-child {
+  margin: -.6rem -.8rem 0; padding: 1.1rem 1.2rem .7rem;
+  background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(10,58,68,.08);
+}
+.cv-side > section:first-child + section { margin-top: calc(var(--side-gap) + .4rem); }
+/* Titres du bandeau un peu plus petits : « Expérience professionnelle / transférable » tient sur 2 lignes */
+.cv-side h2 { margin-bottom: .8rem; font-size: 1.05rem; text-wrap: balance; }
+.cv-side li { margin-bottom: var(--side-item); }
+.cv-side li:last-child, .cv-side .cv-chips li { margin-bottom: 0; }
 .cv-main { padding: 2.4rem 3rem; }
 
 .cv-contact, .cv-list, .cv-chips, .cv-skills { list-style: none; padding: 0; margin: 0; }
@@ -99,7 +116,7 @@ section + section { margin-top: 2rem; }
 }
 .cv-list li { position: relative; padding-left: 1rem; font-size: .95rem; }
 .cv-list li::before { content: '•'; position: absolute; left: 0; color: var(--wine); }
-.cv-interests li { margin-bottom: .6rem; line-height: 1.45; }
+.cv-interests li, .cv-transfer li { line-height: 1.45; }
 .cv-interests strong { display: block; color: var(--petrol); }
 
 .cv-summary {
@@ -141,6 +158,7 @@ section + section { margin-top: 2rem; }
 }
 .cv-btn:hover { text-decoration: none; color: #fff; background: var(--petrol); }
 .cv-btn--main { background: var(--wine); border-color: transparent; }
+button.cv-btn { font: inherit; font-size: .9rem; cursor: pointer; }
 
 /* ---------- 6. RESPONSIVE ---------- */
 @media screen and (max-width: 860px) {
@@ -174,6 +192,17 @@ section + section { margin-top: 2rem; }
   .cv-timeline > li::before, .cv-list li::before { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .cv-role { font-size: 11.5px; }
   .cv-skills li { margin-bottom: 1.6mm; }
+  /* Colonne latérale resserrée (5 rubriques sur une seule page A4) */
+  .cv-body { grid-template-columns: 68mm 1fr; }
+  .cv-side { --side-gap: 8mm; --side-item: 1.5mm; }
+  .cv-side > section:first-child { margin: -1.5mm -2mm 0; padding: 3mm 3.5mm 2mm; border-radius: 3mm; box-shadow: none;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .cv-side > section:first-child + section { margin-top: calc(var(--side-gap) + 1mm); }
+  .cv-side h2 { margin-bottom: 2.5mm; font-size: 13px; }
+  .cv-contact li { margin-bottom: 1.2mm; }
+  .cv-chips { gap: 1.2mm; }
+  .cv-chips li { padding: .15rem .6rem; }
+  .cv-interests li, .cv-transfer li { line-height: 1.38; }
   a { color: var(--ink); }
 }
 
@@ -193,11 +222,26 @@ body.ed-mode [data-ed-key]:focus { outline: 2px solid var(--wine); background: r
 .ed-toolbar button { font: inherit; color: #fff; cursor: pointer; padding: .4rem .75rem; border-radius: 10px; border: 1px solid rgba(92,200,211,.35); background: rgba(255,255,255,.06); }
 .ed-toolbar button:hover { background: var(--petrol); }
 .ed-toolbar .ed-primary { background: var(--wine); border-color: var(--wine); }
+/* Éditeur du CV (module 2 bis) : barre façon traitement de texte */
+.ed-toolbar--cv { flex-direction: column; gap: .4rem; }
+.ed-toolbar--cv .ed-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .35rem; }
+.ed-toolbar--cv button { min-width: 2.2rem; }
+.ed-toolbar--cv select { font: inherit; color: #fff; background: rgba(255,255,255,.06); border: 1px solid rgba(92,200,211,.35); border-radius: 10px; padding: .35rem .4rem; }
+.ed-toolbar--cv select option { color: #0b1d22; }
+.ed-toolbar .ed-sep { width: 1px; align-self: stretch; background: rgba(92,200,211,.35); margin: 0 .2rem; }
+body.ed-mode .cv-page[contenteditable] { outline: 2px dashed rgba(14,99,114,.45); outline-offset: 6px; cursor: text; }
+body.ed-mode .cv-page:focus { outline-color: var(--wine); }
+body.ed-mode .ed-cur { outline: 1px dashed var(--wine); outline-offset: 2px; background: rgba(138,21,56,.05); border-radius: 4px; }
+body.ed-mode { padding-bottom: 13rem; }
+body.ed-mode .cv-actions { display: none; }   /* la barre du mode édition prend leur place */
 .ed-toast {
   position: fixed; left: 50%; top: 1.2rem; z-index: 31; transform: translateX(-50%);
   padding: .55rem 1rem; border-radius: 10px; font-size: .85rem; color: #fff; background: var(--petrol);
 }
-@media print { .ed-toolbar, .ed-toast { display: none !important; } }
+@media print {
+  .ed-toolbar, .ed-toast { display: none !important; }
+  .cv-page[contenteditable], .ed-cur { outline: none !important; background: none !important; }
+}
 
 /* ---------- 8. TRADUCTION (cv-traduction.js) ---------- */
 .cv-lang select {

@@ -19,3 +19,6 @@ ressources/*.exe
 .vscode/
 .claude/
 PROCEDURE-GITHUB.md
+
+# Outils privés (suivi des candidatures, données personnelles)
+outils-prives/

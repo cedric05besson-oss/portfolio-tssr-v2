@@ -6,7 +6,9 @@
   Version web du CV, ouverte depuis les boutons « Voir mon CV » du portfolio.
     • À l'écran : grand format aéré, photo bien visible.
     • À l'impression (Ctrl + P → « Enregistrer au format PDF ») : une page A4.
-    • Modification directe : Ctrl + Alt + M (voir edition.js), puis « Exporter la page ».
+    • Modification directe (éditeur façon Word, edition.js module 2 bis) :
+      bouton « Éditer » (ou Ctrl + Alt + M), puis « Exporter cv.html » →
+      remplacer ce fichier, et « PDF du CV » → ressources/CV_Cedric_BESSON_TSSR.pdf.
   Mise en forme : cv.css
   Pour modifier une information, il suffit de changer le texte ci-dessous.
   ============================================================
@@ -33,6 +35,8 @@
   <!-- Boutons discrets, masqués à l'impression -->
   <nav class="cv-actions" aria-label="Actions">
     <a href="index.html" class="cv-btn"><i class="fas fa-arrow-left" aria-hidden="true"></i> Portfolio</a>
+    <!-- « Éditer » : visible seulement sur l'ordinateur de Cédric (retiré du site publié par edition.js) -->
+    <button type="button" class="cv-btn" data-ed-open data-owner-only title="Modifier le CV (Ctrl + Alt + M)"><i class="fas fa-pen" aria-hidden="true"></i> Éditer</button>
     <a href="ressources/CV_Cedric_BESSON_TSSR.pdf" class="cv-btn cv-btn--main" download><i class="fas fa-download" aria-hidden="true"></i> PDF</a>
   </nav>
 
@@ -70,7 +74,7 @@
         </section>
 
         <section>
-          <h2>Atouts</h2>
+          <h2>Savoir-être</h2>
           <ul class="cv-chips">
             <li>Force de proposition</li>
             <li>Rigueur &amp; organisation</li>
@@ -79,6 +83,17 @@
             <li>Gestion administrative</li>
             <li>Autonomie</li>
             <li>Rédaction &amp; documentation</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Expérience professionnelle transférable</h2>
+          <ul class="cv-list cv-transfer">
+            <li>Management et coordination d'équipes.</li>
+            <li>Gestion opérationnelle et administrative.</li>
+            <li>Relation clients et accompagnement des utilisateurs.</li>
+            <li>Gestion de prestataires et suivi d'activité.</li>
+            <li>Organisation et résolution de problématiques opérationnelles.</li>
           </ul>
         </section>
 

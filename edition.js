@@ -78,6 +78,7 @@ function toast(msg) {
 (function () {
   if (!IS_OWNER) return;   // site publié : pas de mode édition pour les visiteurs
   const PAGE = (location.pathname.split('/').pop() || 'index.html');
+  if (PAGE === 'cv.html') return;   // le CV a son propre éditeur (module 2 bis)
   const KEY  = 'edits:' + PAGE;
 
   // Textes modifiables, et zones exclues (menu, formulaire, bandeau défilant, texte animé…)
@@ -205,28 +206,34 @@ function toast(msg) {
   }
 
   /* ----- Export : on repart du fichier d'origine et on y applique les modifications ----- */
+  // Sérialisation en gardant le doctype et les commentaires d'en-tête
+  function serialize(doc, root) {
+    let out = '';
+    doc.childNodes.forEach(function (n) {
+      if (n.nodeType === 10) out += '<!DOCTYPE html>\n';
+      else if (n.nodeType === 8) out += '<!--' + n.data + '-->\n';
+      else if (n.nodeType === 1) out += (root || n).outerHTML + '\n';
+    });
+    return out;
+  }
+
+  function download(out) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([out], { type: 'text/html' }));
+    a.download = PAGE;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    toast('✓ ' + PAGE + ' téléchargé : remplacez le fichier dans le dossier du site');
+  }
+
   function exportPage() {
-    fetch(location.href.split('#')[0], { cache: 'no-store' })
+    fetch(location.href.split('#')[0].split('?')[0], { cache: 'no-store' })
       .then(function (r) { if (!r.ok) throw new Error(); return r.text(); })
       .then(function (html) {
         const doc = new DOMParser().parseFromString(html, 'text/html');
         if (!applySaved(doc, zones(doc))) throw new Error('structure');
-
-        // Sérialisation en gardant le doctype et les commentaires d'en-tête
-        let out = '';
-        doc.childNodes.forEach(function (n) {
-          if (n.nodeType === 10) out += '<!DOCTYPE html>\n';
-          else if (n.nodeType === 8) out += '<!--' + n.data + '-->\n';
-          else if (n.nodeType === 1) out += n.outerHTML + '\n';
-        });
-
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(new Blob([out], { type: 'text/html' }));
-        a.download = PAGE;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        toast('✓ ' + PAGE + ' téléchargé : remplacez le fichier dans le dossier du site');
+        download(serialize(doc));
       })
       .catch(function (err) {
         toast(err && err.message === 'structure'
@@ -257,6 +264,303 @@ function toast(msg) {
     }
     toggle(on);
   }
+})();
+
+/* ---------- 2 bis. ÉDITEUR DU CV (cv.html), façon traitement de texte ----------
+   Bouton « Éditer » (ou Ctrl + Alt + M) : toute la page du CV devient modifiable.
+     • Gras, italique, souligné, couleur, annuler / rétablir (Ctrl+Z / Ctrl+Y)
+     • Lignes : ajouter, monter, descendre, supprimer (Alt + ↑ / ↓ pour déplacer)
+     • Rubriques : ajouter une rubrique, la déplacer (curseur dans son titre)
+     • Coller une liste (« * », « - », « • ») = une ligne par élément, sans mise en forme parasite
+     • Correcteur d'orthographe du navigateur (clic droit sur un mot souligné)
+   Les modifications sont gardées dans ce navigateur. « Exporter » télécharge le
+   cv.html corrigé (à remettre dans le dossier) ; « PDF du CV » ouvre l'impression A4. */
+(function () {
+  if (!IS_OWNER) return;
+  const PAGE = (location.pathname.split('/').pop() || 'index.html');
+  if (PAGE !== 'cv.html') return;
+  const root = document.querySelector('.cv-page');
+  if (!root) return;
+
+  const KEY = 'cvEditor';
+  const OLD_KEY = 'edits:cv.html';                 // ancien format (texte par texte)
+  function hash(s) { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0; return h.toString(36); }
+  function clean(html) { return html.replace(/\s*\bed-cur\b/g, '').replace(/ class=""/g, ''); }
+
+  const base = hash(root.innerHTML);
+  let saved = Store.get(KEY);
+  let stale = false;
+
+  // Reprise des corrections faites avec l'ancien mode édition (s'il y en a)
+  const old = Store.get(OLD_KEY);
+  if (!saved && old && old.items && Object.keys(old.items).length) {
+    const EDITABLE = 'h1, h2, h3, p, li, dt, dd';
+    const all = Array.prototype.filter.call(root.querySelectorAll(EDITABLE), function (el) {
+      return !el.closest('nav, .cv-transfer') && !(el.tagName === 'H2' && el.parentElement.querySelector('.cv-transfer'));
+    });
+    const z = all.filter(function (el) { return !all.some(function (o) { return o !== el && o.contains(el); }); });
+    if (old.count === z.length) {
+      Object.keys(old.items).forEach(function (i) { if (z[i]) z[i].innerHTML = old.items[i]; });
+      saved = { base: base, html: clean(root.innerHTML) };
+      Store.set(KEY, saved);
+      Store.del(OLD_KEY);
+    }
+  }
+
+  if (saved && saved.html) {
+    if (saved.base === base) root.innerHTML = saved.html;
+    else if (saved.html === clean(root.innerHTML)) { Store.del(KEY); saved = null; }   // fichier exporté remis en place
+    else stale = true;                                                                // cv.html modifié entre-temps
+  }
+
+  let bar = null, editing = false, cur = null, timer = null;
+
+  function save() {
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      saved = { base: base, html: clean(root.innerHTML) };
+      if (!Store.set(KEY, saved)) toast('⚠ Impossible d\'enregistrer dans ce navigateur (navigation privée ?)');
+    }, 300);
+  }
+
+  /* Bloc où se trouve le curseur : ligne de liste, paragraphe, ou rubrique (curseur dans le titre) */
+  function caretNode() {
+    const s = window.getSelection();
+    if (!s.rangeCount) return null;
+    let n = s.getRangeAt(0).startContainer;
+    if (n.nodeType === 3) n = n.parentNode;
+    return root.contains(n) ? n : null;
+  }
+  function block() {
+    const n = caretNode();
+    if (!n) return null;
+    const h = n.closest('h2');
+    if (h && h.parentElement.tagName === 'SECTION') return h.parentElement;
+    return n.closest('li, p, h1, h3');
+  }
+  function mark() {
+    const b = editing ? block() : null;
+    if (b === cur) return;
+    if (cur) cur.classList.remove('ed-cur');
+    cur = b;
+    if (cur) cur.classList.add('ed-cur');
+  }
+  function placeCaret(el, atEnd) {
+    const r = document.createRange();
+    r.selectNodeContents(el);
+    r.collapse(!atEnd);
+    const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    el.scrollIntoView({ block: 'nearest' });
+  }
+
+  function act(a) {
+    const b = block();
+    if (['bold', 'italic', 'underline', 'undo', 'redo', 'removeFormat'].indexOf(a) !== -1) {
+      document.execCommand(a); save(); return;
+    }
+    if (a === 'add') {
+      if (!b) return toast('Placez d\'abord le curseur dans une ligne');
+      let n;
+      if (b.tagName === 'SECTION') {          // curseur dans un titre → 1re ligne de la rubrique
+        const first = b.querySelector('li, p');
+        if (!first) return;
+        n = first.cloneNode(false); n.textContent = 'Nouvelle ligne';
+        first.parentNode.insertBefore(n, first);
+      } else {
+        n = b.cloneNode(false); n.classList.remove('ed-cur');
+        n.textContent = 'Nouvelle ligne';
+        b.after(n);
+      }
+      selectAll(n); save(); mark(); return;
+    }
+    if (a === 'section') {
+      const sec = (b && b.closest('section')) || root.querySelector('.cv-side section:last-child');
+      const n = document.createElement('section');
+      n.innerHTML = '<h2>Nouvelle rubrique</h2><ul class="cv-list"><li>Première ligne</li></ul>';
+      sec.after(n);
+      selectAll(n.querySelector('h2')); save(); mark(); return;
+    }
+    if (!b) return toast('Placez d\'abord le curseur dans une ligne ou un titre de rubrique');
+    if (a === 'up' || a === 'down') {
+      const sib = a === 'up' ? b.previousElementSibling : b.nextElementSibling;
+      if (!sib || sib.tagName !== b.tagName) return;
+      if (a === 'up') sib.before(b); else sib.after(b);
+      b.scrollIntoView({ block: 'nearest' }); save(); return;
+    }
+    if (a === 'del') {
+      const what = b.tagName === 'SECTION' ? 'toute la rubrique « ' + b.querySelector('h2').textContent.trim() + ' »' : 'cette ligne';
+      if (!confirm('Supprimer ' + what + ' ?')) return;
+      b.remove(); cur = null;
+      save(); return;
+    }
+  }
+  function selectAll(el) {
+    const r = document.createRange(); r.selectNodeContents(el);
+    const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    el.scrollIntoView({ block: 'nearest' });
+  }
+
+  /* Coller : texte brut ; une liste collée dans une ligne de liste = une ligne par élément */
+  function onPaste(e) {
+    const t = (e.clipboardData || window.clipboardData).getData('text/plain');
+    if (t == null) return;
+    e.preventDefault();
+    const lines = t.replace(/\r/g, '').split('\n').map(function (l) { return l.trim(); }).filter(Boolean);
+    const n = caretNode();
+    const li = n && n.closest('li');
+    if (li && lines.length > 1) {
+      const items = lines.map(function (l) { return l.replace(/^([*\-•·–]|\d+[.)])\s*/, ''); });
+      // Ligne vide (ou « Nouvelle ligne ») : le 1er élément la remplit ; sinon tout va en dessous
+      if (!li.textContent.trim() || li.textContent.trim() === 'Nouvelle ligne') {
+        selectAll(li);
+        document.execCommand('insertText', false, items.shift());
+      }
+      let last = li;
+      items.forEach(function (txt) { const x = li.cloneNode(false); x.classList.remove('ed-cur'); x.textContent = txt; last.after(x); last = x; });
+      placeCaret(last, true);
+    } else {
+      document.execCommand('insertText', false, lines.join(' '));
+    }
+    save();
+  }
+
+  function onKey(e) {
+    if (e.altKey && !e.ctrlKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) {
+      e.preventDefault(); act(e.key === 'ArrowUp' ? 'up' : 'down');
+    }
+  }
+
+  function cleanDoc() {
+    const r = document.documentElement.cloneNode(true);
+    r.querySelectorAll('.ed-toolbar, .ed-toast, #gt-holder, .cv-lang, .skiptranslate, ' +
+      'script[src*="translate"], link[href*="translate"], style[id^="goog"]').forEach(function (el) { el.remove(); });
+    r.querySelectorAll('[contenteditable], [spellcheck], .ed-cur').forEach(function (el) {
+      el.removeAttribute('contenteditable'); el.removeAttribute('spellcheck'); el.classList.remove('ed-cur');
+      if (!el.getAttribute('class')) el.removeAttribute('class');
+    });
+    r.querySelectorAll('.cv-name').forEach(function (el) { el.classList.remove('notranslate'); el.removeAttribute('translate'); });
+    r.removeAttribute('style'); r.classList.remove('public-view');
+    if (!r.getAttribute('class')) r.removeAttribute('class');
+    const b = r.querySelector('body');
+    b.classList.remove('ed-mode'); b.removeAttribute('style');
+    if (!b.getAttribute('class')) b.removeAttribute('class');
+    let out = '';
+    document.childNodes.forEach(function (n) {
+      if (n.nodeType === 10) out += '<!DOCTYPE html>\n';
+      else if (n.nodeType === 8) out += '<!--' + n.data + '-->\n';
+      else if (n.nodeType === 1) out += r.outerHTML + '\n';
+    });
+    return out;
+  }
+  function exportPage() {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([cleanDoc()], { type: 'text/html' }));
+    a.download = 'cv.html';
+    document.body.appendChild(a); a.click(); a.remove();
+    toast('✓ cv.html téléchargé : remplacez le fichier dans le dossier du portfolio');
+  }
+
+  const B = function (act, icon, label, title) {
+    return '<button type="button" data-act="' + act + '" title="' + (title || label) + '">' +
+      (icon ? '<i class="fas ' + icon + '" aria-hidden="true"></i>' : '') + (label ? ' ' + label : '') + '</button>';
+  };
+  function buildBar() {
+    bar = document.createElement('div');
+    bar.className = 'ed-toolbar ed-toolbar--cv';
+    bar.setAttribute('role', 'toolbar');
+    bar.setAttribute('aria-label', 'Édition du CV');
+    bar.innerHTML =
+      '<div class="ed-row">' +
+        '<span class="ed-title"><i class="fas fa-pen" aria-hidden="true"></i> CV</span>' +
+        B('bold', 'fa-bold', '', 'Gras (Ctrl+B)') + B('italic', 'fa-italic', '', 'Italique (Ctrl+I)') +
+        B('underline', 'fa-underline', '', 'Souligné (Ctrl+U)') +
+        '<select data-color title="Couleur du texte" aria-label="Couleur du texte">' +
+          '<option value="">Couleur</option><option value="#0b1d22">Noir</option>' +
+          '<option value="#0e6372">Pétrole</option><option value="#8a1538">Bordeaux</option><option value="#6b7f84">Gris</option></select>' +
+        B('removeFormat', 'fa-text-slash', '', 'Effacer la mise en forme') +
+        '<span class="ed-sep"></span>' +
+        B('undo', 'fa-rotate-left', '', 'Annuler (Ctrl+Z)') + B('redo', 'fa-rotate-right', '', 'Rétablir (Ctrl+Y)') +
+      '</div><div class="ed-row">' +
+        B('add', 'fa-plus', 'Ligne', 'Ajouter une ligne sous celle du curseur') +
+        B('up', 'fa-arrow-up', '', 'Monter (Alt+↑)') + B('down', 'fa-arrow-down', '', 'Descendre (Alt+↓)') +
+        B('del', 'fa-trash', '', 'Supprimer la ligne (ou la rubrique si le curseur est dans son titre)') +
+        B('section', 'fa-layer-group', 'Rubrique', 'Ajouter une rubrique sous celle du curseur') +
+      '</div><div class="ed-row">' +
+        '<button type="button" data-act="export" class="ed-primary"><i class="fas fa-download" aria-hidden="true"></i> Exporter cv.html</button>' +
+        B('pdf', 'fa-file-pdf', 'PDF du CV', 'Enregistrer le CV en PDF (une page A4)') +
+        B('reset', 'fa-eraser', 'Tout annuler', 'Revenir au CV du fichier') +
+        B('close', 'fa-check', 'Terminer') +
+      '</div>';
+    document.body.appendChild(bar);
+    // Les boutons ne doivent pas faire perdre le curseur dans le texte
+    bar.addEventListener('mousedown', function (e) { if (e.target.closest('button')) e.preventDefault(); });
+    bar.addEventListener('click', function (e) {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const a = btn.dataset.act;
+      if (a === 'close') return toggle(false);
+      if (a === 'export') return exportPage();
+      if (a === 'pdf') {
+        toggle(false);
+        toast('Imprimante : « Enregistrer au format PDF » → ressources/CV_Cedric_BESSON_TSSR.pdf');
+        return setTimeout(function () { window.print(); }, 400);
+      }
+      if (a === 'reset') {
+        if (confirm('Effacer toutes les modifications non exportées du CV ?')) { Store.del(KEY); Store.del(OLD_KEY); location.reload(); }
+        return;
+      }
+      act(a);
+    });
+    bar.querySelector('[data-color]').addEventListener('change', function (e) {
+      if (e.target.value) { document.execCommand('foreColor', false, e.target.value); save(); }
+      e.target.value = '';
+    });
+  }
+
+  function toggle(on) {
+    editing = on;
+    if (!bar) buildBar();
+    bar.hidden = !on;
+    document.body.classList.toggle('ed-mode', on);
+    if (on) {
+      root.setAttribute('contenteditable', 'true');
+      root.setAttribute('spellcheck', 'true');
+      root.addEventListener('input', save);
+      root.addEventListener('paste', onPaste);
+      root.addEventListener('keydown', onKey);
+      document.addEventListener('selectionchange', mark);
+      try { document.execCommand('styleWithCSS', false, false); } catch (err) { /* ignoré */ }
+      toast(stale ? '⚠ cv.html a changé : vos anciennes modifications ne sont pas appliquées (« Tout annuler » pour les effacer)'
+                  : '✏️ Cliquez dans le CV pour écrire, comme dans Word');
+    } else {
+      root.removeAttribute('contenteditable');
+      root.removeAttribute('spellcheck');
+      root.removeEventListener('input', save);
+      root.removeEventListener('paste', onPaste);
+      root.removeEventListener('keydown', onKey);
+      document.removeEventListener('selectionchange', mark);
+      if (cur) { cur.classList.remove('ed-cur'); cur = null; }
+      save();
+      toast('✓ Modifications gardées dans ce navigateur. Pensez à « Exporter cv.html ».');
+    }
+  }
+
+  function tryToggle(on) {
+    if (on && /translated-(ltr|rtl)/.test(document.documentElement.className)) {
+      toast('⚠ Repassez le CV en français (FR) avant de le modifier');
+      return;
+    }
+    toggle(on);
+  }
+  document.addEventListener('keydown', function (e) {
+    if (e.ctrlKey && e.altKey && !e.getModifierState('AltGraph') && (e.key === 'm' || e.key === 'M')) {
+      e.preventDefault(); tryToggle(!editing);
+    }
+  });
+  document.querySelectorAll('[data-ed-open]').forEach(function (b) {
+    b.addEventListener('click', function () { tryToggle(!editing); });
+  });
+  if (/[?&]edition\b/.test(location.search)) tryToggle(true);
 })();
 
 /* ---------- 4. OUTILS CV (boutons du bandeau, visibles en mode édition) ----------
